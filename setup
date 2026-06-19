@@ -1,0 +1,61 @@
+#!/usr/bin/env zsh
+# prof-x setup — register all skills with Claude Code
+set -e
+
+PROFX_DIR="$(cd "$(dirname "$0")" && pwd)"
+SKILLS_DIR="$(dirname "$PROFX_DIR")"
+
+# /pr-review wraps the pr-review-toolkit plugin. Install it if it's missing.
+# Non-fatal: a failure here must not abort the skill symlinking above.
+install_pr_review_toolkit() {
+  local plugin="pr-review-toolkit@claude-plugins-official"
+
+  if ! command -v claude >/dev/null 2>&1; then
+    echo "  pr-review-toolkit: skipped — 'claude' CLI not on PATH."
+    echo "    install manually: claude plugin install $plugin"
+    return 0
+  fi
+
+  if claude plugin list --json 2>/dev/null | grep -q '"id": *"pr-review-toolkit@'; then
+    echo "  pr-review-toolkit: already installed."
+    return 0
+  fi
+
+  echo "  pr-review-toolkit: installing ($plugin)…"
+  if claude plugin install "$plugin" --scope user >/dev/null 2>&1; then
+    echo "  pr-review-toolkit: installed."
+  else
+    echo "  pr-review-toolkit: install failed — install it manually:"
+    echo "    claude plugin install $plugin"
+    echo "    (if the marketplace is unknown: claude plugin marketplace add anthropics/claude-plugins-public)"
+  fi
+}
+
+# Only create skill symlinks if we're inside a .claude/skills directory
+SKILLS_BASENAME="$(basename "$SKILLS_DIR")"
+if [ "$SKILLS_BASENAME" = "skills" ]; then
+  linked=()
+  for skill_dir in "$PROFX_DIR"/*/; do
+    if [ -f "$skill_dir/SKILL.md" ]; then
+      skill_name="$(basename "$skill_dir")"
+      # Skip node_modules
+      [ "$skill_name" = "node_modules" ] && continue
+      target="$SKILLS_DIR/$skill_name"
+      # Create or update symlink; skip if a real file/directory exists
+      if [ -L "$target" ] || [ ! -e "$target" ]; then
+        ln -snf "$PROFX_DIR/$skill_name" "$target"
+        linked+=("$skill_name")
+      fi
+    fi
+  done
+
+  echo "(X) To me, my X-Men! Prof-X ready."
+  if [ ${#linked[@]} -gt 0 ]; then
+    echo "  linked skills: ${linked[*]}"
+  fi
+  install_pr_review_toolkit
+else
+  echo "(X) To me, my X-Men! Prof-X ready."
+  echo "  (skipped skill symlinks — not inside .claude/skills/)"
+  install_pr_review_toolkit
+fi
