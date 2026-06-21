@@ -1,5 +1,5 @@
 ---
-name: arch-review
+name: plan-eng-review
 version: 1.0.0
 description: |
   Architecture / eng manager, tech lead review. Lock in the execution plan — 
