@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.3] - 2026-06-21
+
+### Changed
+
+- Renamed the `/strategy-review` skill to `/plan-prod-review` (directory, `name:` frontmatter, and all references in `CLAUDE.md` and `README.md`).
+
 ## [0.0.2] - 2026-06-21
 
 ### Changed
