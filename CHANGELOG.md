@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0] - 2026-06-21
+
+### Added
+
+- `/investigate` skill — systematic root-cause debugging with a five-phase workflow (investigation, pattern analysis, hypothesis testing, implementation, verification) and an Iron Law: no fixes without root-cause investigation first. Includes a 3-strike escalation rule and blast-radius checks via `AskUserQuestion`.
+- `/investigate` documented in `README.md` (skill table and install instructions) and the project `CLAUDE.md` structure tree.
+
 ## [0.0.3] - 2026-06-21
 
 ### Changed
