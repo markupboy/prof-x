@@ -1,5 +1,5 @@
 ---
-name: strategy-review
+name: plan-prod-review
 version: 1.0.0
 description: |
   CPO / staff PM plan review. Rethink the problem, align on the outcome, prep for breakdown and handoff. Rigorously challenge premises, expand scope when it creates a better product. Three modes:

@@ -4,7 +4,7 @@
 
 ```
 prof-x/
-├── strategy-review/  # /strategy-review skill (CPO / staff PM plan review)
+├── plan-prod-review/ # /plan-prod-review skill (CPO / staff PM plan review)
 ├── plan-eng-review/  # /plan-eng-review skill (eng manager / tech lead plan review)
 ├── review/           # /review skill + checklist.md (pre-landing review)
 ├── pr-review/        # /pr-review skill (saves to file; wraps pr-review-toolkit)
