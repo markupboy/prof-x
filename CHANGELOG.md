@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1] - 2026-06-21
+
+### Changed
+
+- `setup` now prunes stale skill symlinks — on each run it removes any symlink in
+  `~/.claude/skills/` that points into the prof-x clone but whose source skill directory
+  no longer has a `SKILL.md` (e.g. a renamed or removed skill), reporting them under
+  `pruned stale skills:`.
+
 ## [0.2.0] - 2026-06-21
 
 ### Added

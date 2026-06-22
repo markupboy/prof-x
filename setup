@@ -49,9 +49,28 @@ if [ "$SKILLS_BASENAME" = "skills" ]; then
     fi
   done
 
+  # Remove stale symlinks: any symlink in SKILLS_DIR that points into PROFX_DIR
+  # but whose source skill directory no longer exists (e.g. a renamed/removed skill).
+  pruned=()
+  for target in "$SKILLS_DIR"/*; do
+    [ -L "$target" ] || continue
+    link_dest="$(readlink "$target")"
+    case "$link_dest" in
+      "$PROFX_DIR"/*)
+        if [ ! -f "$link_dest/SKILL.md" ]; then
+          rm -f "$target"
+          pruned+=("$(basename "$target")")
+        fi
+        ;;
+    esac
+  done
+
   echo "(X) To me, my X-Men! Prof-X ready."
   if [ ${#linked[@]} -gt 0 ]; then
     echo "  linked skills: ${linked[*]}"
+  fi
+  if [ ${#pruned[@]} -gt 0 ]; then
+    echo "  pruned stale skills: ${pruned[*]}"
   fi
   install_pr_review_toolkit
 else
