@@ -1,1 +1,4 @@
 .claude/
+
+# Transient artifacts from the /browse skill (playwright-cli snapshots, screenshots)
+.playwright-cli/

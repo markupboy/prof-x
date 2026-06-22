@@ -11,6 +11,7 @@ prof-x/
 ├── pr-review/        # /pr-review skill (saves to file; wraps pr-review-toolkit)
 ├── ship/             # /ship skill (release workflow)
 ├── retro/            # /retro skill (engineering retrospective)
+├── browse/           # /browse skill (Playwright-cli QA / dogfooding browser)
 ├── setup             # registers skills via symlinks + installs pr-review-toolkit
 ├── README.md
 ├── CHANGELOG.md
@@ -19,7 +20,9 @@ prof-x/
 ```
 
 Each skill is a directory containing a `SKILL.md` (pure Markdown prompt, no code).
-There is no build step and no binary — prof-x is a skill/prompt collection.
+There is no build step and prof-x ships no binary of its own — it's a skill/prompt
+collection. (`/browse` is the one skill that drives an *external* binary, the official
+`playwright-cli` / `@playwright/cli`; it is not bundled.)
 
 ## Deploying to the active skill
 
