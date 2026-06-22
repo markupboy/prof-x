@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0] - 2026-06-21
+
+### Added
+
+- `/browse` skill — QA / dogfooding browser driven by the official `playwright-cli`
+  (`@playwright/cli`). Navigate, interact via snapshot refs, assert element state with
+  `eval`, diff before/after via `--raw snapshot`, screenshot, check responsive layouts,
+  inspect console/network, mock routes, persist auth state, and hand off to an interactive
+  review (`show --annotate`). Command reference matches the installed binary's real surface.
+- `/browse` documented in `README.md` (skill table + a Requirements note covering the
+  external `playwright-cli` dependency) and the project `CLAUDE.md` structure tree.
+
 ## [0.1.0] - 2026-06-21
 
 ### Added
