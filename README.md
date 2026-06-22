@@ -17,6 +17,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/retro`           | Engineering manager     | Analyze commit history, work patterns, and shipping velocity for the week.             |
+| `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
 
 ## Who is this for
 
@@ -37,7 +38,14 @@ Everything lives inside `.claude/`. Nothing touches your PATH or runs in the bac
 
 ### Requirements
 
-Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). `/pr-review` has two extra dependencies:
+Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Two skills have extra dependencies.
+
+`/browse` requires the official **`playwright-cli`** binary (`@playwright/cli`) on `PATH`:
+
+- Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
+- First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
+
+`/pr-review` has two extra dependencies:
 
 - **`pr-review-toolkit` (required).** `/pr-review` wraps it — it invokes `/pr-review-toolkit:review-pr` to do the actual analysis, then adds Linear-awareness and file output on top. `./setup` installs it for you (`claude plugin install pr-review-toolkit@claude-plugins-official`); without it, `/pr-review` cannot run.
 - **A Linear MCP server (optional).** When present, `/pr-review` fetches the linked Linear ticket and scores the PR against its acceptance criteria. When absent, it degrades gracefully — it notes the ticket reference but skips the criterion-level analysis. No Linear key in the branch/PR means this is skipped entirely.
