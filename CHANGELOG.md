@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0] - 2026-06-23
+
+### Added
+
+- `/spec` skill — author a backlog-ready spec by interrogating intent across five
+  phases (understand the why, lock scope, interrogate the code, review the draft,
+  file), then file it as a Linear issue. Adapted from gstack's `/spec` for prof-x's
+  pure-Markdown, no-binary model: dropped the external `codex` quality gate,
+  redaction/secret-scan scripts, telemetry, and the worktree agent-spawn pipeline.
+  Dedupe and filing target Linear via the MCP (discover-tools pattern from
+  `/pr-review`, with graceful degradation when the MCP is absent or `--local` is
+  passed); every spec is also archived to `.context/specs/`. Keeps the 14
+  issue-quality standards, the Standard/Epic/Audit templates, and the
+  rules/anti-patterns. Flags: `--dedupe`/`--no-dedupe`, `--audit`, `--local`.
+- `/spec` documented in `README.md` (skill table + install instructions) and the
+  project `CLAUDE.md` structure tree.
+
 ## [0.2.1] - 2026-06-21
 
 ### Changed
