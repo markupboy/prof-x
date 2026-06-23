@@ -10,6 +10,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 
 | Skill              | Mode                    | What it does                                                                           |
 | ------------------ | ----------------------- | -------------------------------------------------------------------------------------- |
+| `/spec`            | Principal engineer      | Interrogate intent across five phases, then file a backlog-ready Linear issue          |
 | `/plan-prod-review` | CPO / staff PM          | Evaluate the problem, align on the outcome, prep for breakdown and handoff             |
 | `/plan-eng-review` | Eng manager / Tech lead | Lock in architecture, data flow, diagrams, edge cases, and tests                       |
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
@@ -25,7 +26,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro.
 
 ### What gets installed
 
