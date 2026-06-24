@@ -1,6 +1,7 @@
 # Prof-X
 
-_To me, my X-Men!_
+!["To me, my X-Men."](https://blake-walters.com/images/profx.webp)
+_© Marvel Characters, Inc. / Marvel Comics. All rights reserved._
 
 **Prof-X is an opinionated setup of Claude Code to assist in my day-to-day AI coding assistant needs, both personally and professionally.**
 
