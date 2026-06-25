@@ -175,11 +175,33 @@ $B network-state-set offline                     # test offline behaviour
 
 ## Capturing a session as evidence
 
-For flaky bugs or repro steps, record a trace or video instead of stitching screenshots:
+For flaky bugs or repro steps, record the whole session instead of stitching screenshots.
+**Video** is the human-watchable walkthrough — wrap a flow in `video-start`/`video-stop`, and
+turn on `video-show-actions` so each click/fill is annotated on screen with a callout naming
+the action, the target element highlighted, and an animated cursor moving between points:
+
+```bash
+$B open                              # launch the browser FIRST — video-start needs it open
+$B video-start /tmp/session.webm     # begin recording (filename optional; default fits 800x800)
+$B video-show-actions                # annotate each action: callout + highlight + animated cursor
+$B goto https://app.com/login        # navigate after recording starts so the load is captured
+$B fill e3 "user@test.com"
+$B fill e4 "password" --submit
+$B video-chapter "Dashboard loaded"  # optional marker in the timeline
+$B video-stop                        # finalize the .webm
+```
+
+Knobs: `video-start --size=1280x720` sets the frame size; `video-show-actions` takes
+`--duration=<ms>` (how long each callout stays, default 500), `--position=<top-left|top|
+top-right|bottom-left|bottom|bottom-right>` (default top-right), and `--cursor=pointer|none`;
+`video-chapter` takes `--description=<text>` and `--duration=<ms>`. `video-hide-actions` stops
+the annotations.
+
+**Trace** is the alternative for deep debugging — a full DOM/network replay rather than a
+video. Use it when you need to inspect *why*, not just *what*:
 
 ```bash
 $B tracing-start ; $B click e4 ; $B fill e7 "test" ; $B tracing-stop   # Playwright trace
-$B video-start /tmp/repro.webm ; $B click e4 ; $B video-stop           # screen recording
 ```
 
 ## User Handoff (interactive review)
@@ -252,7 +274,8 @@ Tabs:        tab-list · tab-new [url] · tab-close [i] · tab-select <i>
 Storage:     state-save [file] · state-load <file> · cookie-{list,get,set,delete,clear} ·
              localstorage-{list,get,set,delete,clear} · sessionstorage-{…}
 Network:     route <pattern> · route-list · unroute [pattern] · network-state-set <on|off>
-Evidence:    tracing-{start,stop} · video-{start,stop,chapter} · show [--annotate]
+Evidence:    tracing-{start,stop} · video-{start,stop,chapter} · video-{show,hide}-actions ·
+             show [--annotate]
 Sessions:    -s=<name> · list · close-all · kill-all · open --persistent|--profile=|--browser=
 Code:        run-code [code|--filename]
 Global opts: --raw · --json · --help [command] · --version
