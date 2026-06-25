@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.1] - 2026-06-25
+
+### Changed
+
+- `/browse` — promote optional session video recording to a first-class, documented
+  pattern in the "Capturing a session as evidence" section. Adds the
+  `video-show-actions`/`video-hide-actions` commands (annotate each interaction with an
+  on-screen callout, element highlight, and animated cursor), documents the
+  `video-start --size`, `video-show-actions --duration/--position/--cursor`, and
+  `video-chapter --description/--duration` options, and clarifies that the browser must
+  be open before `video-start` (recipe now `open` → `video-start` → `goto` so the first
+  navigation is captured). Splits the video vs. trace guidance (video = human-watchable
+  walkthrough; trace = full DOM/network replay) and updates the Evidence row of the Full
+  Command List. Verified against `playwright-cli` v0.1.14.
+
 ## [0.3.0] - 2026-06-23
 
 ### Added
