@@ -156,7 +156,7 @@ Each issue MUST follow this structured format:
 
 Body of the finding — explanation of the bug, evidence, references to sibling code, etc.
 
-**Fix:** optional remediation guidance.
+Suggested fix - optional remediation guidance.
 
 ```js
 // optional code block illustrating the fix
@@ -172,7 +172,7 @@ Formatting rules:
 - `Files:` is always a bulleted list, even when there is only one file. This keeps single-file and multi-file issues visually consistent and makes adding files trivial.
 - `Status:` values are UPPERCASE: `OPEN`, `DISMISSED`, `FIXED`.
 - `**Details:**` introduces the body of the finding; leave a blank line after it before the prose.
-- `**Fix:**` is optional — include it when there is concrete remediation guidance, otherwise omit.
+- `Suggested Fix -` is optional — include it when there is concrete remediation guidance, otherwise omit.
 
 Status rules:
 

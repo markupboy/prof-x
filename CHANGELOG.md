@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2] - 2026-06-25
+
+### Changed
+
+- `/pr-review` — reword the optional remediation line in the issue-format template from
+  `**Fix:**` to `Suggested fix -`.
+
 ## [0.3.1] - 2026-06-25
 
 ### Changed
