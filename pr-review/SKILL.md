@@ -147,6 +147,10 @@ Each issue MUST follow this structured format:
 **Introduced:** v1  
 **Severity:** Critical
 **Status:** OPEN  
+**Comment On:**
+
+- `file.ts:42`
+
 **Files:**
 
 - `file.ts:42`
@@ -169,7 +173,8 @@ Formatting rules:
 
 - The title line stands alone (no inline file path, no inline metadata).
 - Each metadata field (`Introduced:`, `Status:`, `Files:`) is on its own line. Lines that have a sibling field directly below them MUST end with two trailing spaces — this is the markdown line-break syntax that prevents adjacent fields from collapsing onto a single rendered line. (`Files:` itself does not need trailing spaces because the bulleted list that follows already forces a break.)
-- `Files:` is always a bulleted list, even when there is only one file. This keeps single-file and multi-file issues visually consistent and makes adding files trivial.
+- `Comment On:` is the file or file and line number that makes the most logical sense to pin to for leaving a PR review comment for the author.
+- `Files:` is always a bulleted list, even when there is only one file. This keeps single-file and multi-file issues visually consistent and makes adding files trivial. 
 - `Status:` values are UPPERCASE: `OPEN`, `DISMISSED`, `FIXED`.
 - `**Details:**` introduces the body of the finding; leave a blank line after it before the prose.
 - `Suggested Fix -` is optional — include it when there is concrete remediation guidance, otherwise omit.
