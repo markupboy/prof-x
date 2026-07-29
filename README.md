@@ -32,7 +32,8 @@ Me and only me, really. I have no intention of this being used in its entirety e
 ### What gets installed
 
 - Skill files (Markdown prompts) in `~/.claude/skills/prof-x/` (or `.claude/skills/prof-x/` for project installs)
-- `setup` symlinks every skill directory up into the skills dir (e.g. `~/.claude/skills/review` → `prof-x/review`) so each `/skill` is discoverable
+- `setup` symlinks every skill directory up into the Claude Code skills dir (e.g. `~/.claude/skills/review` → `prof-x/review`) so each `/skill` is discoverable
+- `setup` also symlinks every skill into Cursor's personal skills dir (`~/.cursor/skills/review` → `prof-x/review`), so the same skills are available in Cursor (the dir is created if missing)
 - `setup` also installs the `pr-review-toolkit` plugin (idempotent — skipped if already present; see [Requirements](#requirements))
 - `/retro` saves JSON snapshots to `.context/retros/` in your project for trend tracking
 

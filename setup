@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# prof-x setup — register all skills with Claude Code
+# prof-x setup — register all skills with Claude Code and Cursor
 set -e
 
 PROFX_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -31,16 +31,26 @@ install_pr_review_toolkit() {
   fi
 }
 
-# Only create skill symlinks if we're inside a .claude/skills directory
-SKILLS_BASENAME="$(basename "$SKILLS_DIR")"
-if [ "$SKILLS_BASENAME" = "skills" ]; then
-  linked=()
+# Symlink every prof-x skill directory into the given skills directory, and
+# prune stale symlinks whose source skill no longer exists. Prints a summary
+# prefixed with $label. The target directory is created if missing.
+link_skills_into() {
+  # Don't abort on an unmatched glob (e.g. an empty destination directory).
+  setopt local_options null_glob
+
+  local dest_dir="$1"
+  local label="$2"
+
+  mkdir -p "$dest_dir"
+
+  local linked=()
+  local skill_dir skill_name target
   for skill_dir in "$PROFX_DIR"/*/; do
     if [ -f "$skill_dir/SKILL.md" ]; then
       skill_name="$(basename "$skill_dir")"
       # Skip node_modules
       [ "$skill_name" = "node_modules" ] && continue
-      target="$SKILLS_DIR/$skill_name"
+      target="$dest_dir/$skill_name"
       # Create or update symlink; skip if a real file/directory exists
       if [ -L "$target" ] || [ ! -e "$target" ]; then
         ln -snf "$PROFX_DIR/$skill_name" "$target"
@@ -49,10 +59,11 @@ if [ "$SKILLS_BASENAME" = "skills" ]; then
     fi
   done
 
-  # Remove stale symlinks: any symlink in SKILLS_DIR that points into PROFX_DIR
+  # Remove stale symlinks: any symlink in dest_dir that points into PROFX_DIR
   # but whose source skill directory no longer exists (e.g. a renamed/removed skill).
-  pruned=()
-  for target in "$SKILLS_DIR"/*; do
+  local pruned=()
+  local link_dest
+  for target in "$dest_dir"/*; do
     [ -L "$target" ] || continue
     link_dest="$(readlink "$target")"
     case "$link_dest" in
@@ -65,16 +76,27 @@ if [ "$SKILLS_BASENAME" = "skills" ]; then
     esac
   done
 
-  echo "(X) To me, my X-Men! Prof-X ready."
+  echo "  $label ($dest_dir):"
   if [ ${#linked[@]} -gt 0 ]; then
-    echo "  linked skills: ${linked[*]}"
+    echo "    linked skills: ${linked[*]}"
+  else
+    echo "    linked skills: (already up to date)"
   fi
   if [ ${#pruned[@]} -gt 0 ]; then
-    echo "  pruned stale skills: ${pruned[*]}"
+    echo "    pruned stale skills: ${pruned[*]}"
   fi
-  install_pr_review_toolkit
+}
+
+echo "(X) To me, my X-Men! Prof-X ready."
+
+# Register with Claude Code, but only if we're inside a .claude/skills directory.
+if [ "$(basename "$SKILLS_DIR")" = "skills" ]; then
+  link_skills_into "$SKILLS_DIR" "Claude Code skills"
 else
-  echo "(X) To me, my X-Men! Prof-X ready."
-  echo "  (skipped skill symlinks — not inside .claude/skills/)"
-  install_pr_review_toolkit
+  echo "  Claude Code skills: skipped — not inside .claude/skills/"
 fi
+
+# Register with Cursor's global personal skills directory.
+link_skills_into "$HOME/.cursor/skills" "Cursor skills"
+
+install_pr_review_toolkit

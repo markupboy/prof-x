@@ -13,7 +13,7 @@ prof-x/
 ├── ship/             # /ship skill (release workflow)
 ├── retro/            # /retro skill (engineering retrospective)
 ├── browse/           # /browse skill (Playwright-cli QA / dogfooding browser)
-├── setup             # registers skills via symlinks + installs pr-review-toolkit
+├── setup             # registers skills (Claude Code + Cursor) via symlinks + installs pr-review-toolkit
 ├── README.md
 ├── CHANGELOG.md
 ├── VERSION           # 3-digit semver, bumped by /ship
@@ -29,8 +29,10 @@ collection. (`/browse` is the one skill that drives an *external* binary, the of
 
 The active install lives at `~/.claude/skills/prof-x/`, and `setup` symlinks each
 skill directory up into `~/.claude/skills/` (e.g. `~/.claude/skills/review` →
-`prof-x/review`) so each `/skill` is discoverable. Because the skills are symlinks
-into the clone, pulling latest is all that's needed — no rebuild.
+`prof-x/review`) so each `/skill` is discoverable. It also symlinks each skill into
+Cursor's personal skills dir at `~/.cursor/skills/` (e.g. `~/.cursor/skills/review` →
+`prof-x/review`; created if missing) so the same skills work in Cursor. Because the
+skills are symlinks into the clone, pulling latest is all that's needed — no rebuild.
 
 After making changes:
 
