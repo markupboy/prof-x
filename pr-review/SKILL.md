@@ -115,6 +115,18 @@ Look for existing review files to determine if this is a versioned re-review:
 
 Invoke the pr-review-toolkit to perform the review as requested by the user. Use `/pr-review-toolkit:review-pr` with any specific analyzers they mention (e.g., comment-analyzer, security-analyzer).
 
+### Calibrate severity
+
+Exhaustive reviews trend toward pedantry more than usefulness. We are a working engineering team with legacy codebases that don't operate at intense scale — ground every finding in that reality:
+
+- Resilience against infrastructure errors matters, but findings should target plausible real-world failure modes, not gold-plate code against every conceivable edge case.
+- Test coverage matters, but findings should be grounded in catching real issues, not preventing every hypothetical future issue an author might imagine.
+- A finding earns **Critical** or **Important** only if you can name a concrete, plausible way it would actually bite someone in this codebase — not a theoretical worst case.
+
+**Forward this framing to sub-agents — they won't see it otherwise.** Task-spawned sub-agents (`comment-analyzer`, `silent-failure-hunter`, `pr-test-analyzer`, `type-design-analyzer`, `code-reviewer`) do not inherit this conversation; they only see the prompt they're given. When the toolkit launches each one, include the calibration guidance above — and the `silent-failure-hunter` note below, when applicable — directly in that sub-agent's task prompt.
+
+**`silent-failure-hunter` needs an explicit override.** Its own instructions claim "zero tolerance" for silent failures and tell it to "call out every instance... no matter how minor" — language strong enough to override generic pragmatism framing on its own. When invoking it, explicitly instruct it to only surface **Critical** for silent failures with a plausible production trigger, and to downgrade broad-catch or missing-context nitpicks that don't hide a real class of error to **Suggestion** (or omit them).
+
 **Worktree note:** The current working directory is the project root for the branch being reviewed. Agents spawned by the toolkit should explore code here — do NOT navigate to other worktrees or parent directories to find source files. `WORKTREE_ROOT` is only used for reading/writing review files in steps 2 and 10.
 
 **Linear-aware analysis:** if `LINEAR_CONTEXT` was captured in step 1d, treat the Linear ticket — not the PR description — as the source of truth for _what was supposed to be done_. After the toolkit finishes:
@@ -124,6 +136,15 @@ Invoke the pr-review-toolkit to perform the review as requested by the user. Use
 - Treat any **not met** or **partially met** criterion as a finding in the regular sections (typically `Important` for missing required behavior, `Suggestion` for nice-to-have polish that the ticket called out). Use the issue body to quote the ticket's wording so the gap is traceable.
 - Flag **scope creep**: substantial changes in the diff that have no basis in the ticket (refactors, unrelated cleanups, feature additions). Surface these as `Suggestion` findings unless they introduce real risk, in which case escalate.
 - If `LINEAR_KEY` was found but `LINEAR_CONTEXT` could not be fetched (auth failure, no MCP, etc.), do not fabricate ticket contents. Note the limitation in step 7's Description block and skip the criterion-level analysis.
+
+## 3b. Triage findings for realism
+
+Once the toolkit (and any Linear-aware analysis above) has produced findings, review them yourself as a backstop before reformatting in step 4 — sub-agents may still over-flag despite the calibration above:
+
+- For each finding, ask: would a working engineer on this team actually act on this, or is it theoretical completeness?
+- Downgrade findings resting on unlikely edge cases (traffic patterns, scale, or failure modes this codebase doesn't actually face) from Critical/Important to Suggestion, or drop them entirely if they add no real value.
+- Do not downgrade findings that are correct and cheap to fix just because they're minor — the goal is realism, not silence on legitimate issues.
+- Leave findings from the Linear-aware analysis alone unless they specifically suffer from the same over-flagging pattern.
 
 ## 4. Reformat with sequential numbering
 
