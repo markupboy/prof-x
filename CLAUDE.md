@@ -5,6 +5,7 @@
 ```
 prof-x/
 ├── spec/             # /spec skill (interrogate intent → file a Linear issue)
+├── start-vibing/     # /start-vibing skill (idea → running app) + stack-app.md, stack-service.md
 ├── plan-prod-review/ # /plan-prod-review skill (CPO / staff PM plan review)
 ├── plan-eng-review/  # /plan-eng-review skill (eng manager / tech lead plan review)
 ├── review/           # /review skill + checklist.md (pre-landing review)
