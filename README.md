@@ -12,6 +12,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | Skill              | Mode                    | What it does                                                                           |
 | ------------------ | ----------------------- | -------------------------------------------------------------------------------------- |
 | `/spec`            | Principal engineer      | Interrogate intent across five phases, then file a backlog-ready Linear issue          |
+| `/start-vibing`    | Staff engineer          | Idea → running app on the canonical stack, with one feature working end to end          |
 | `/plan-prod-review` | CPO / staff PM          | Evaluate the problem, align on the outcome, prep for breakdown and handoff             |
 | `/plan-eng-review` | Eng manager / Tech lead | Lock in architecture, data flow, diagrams, edge cases, and tests                       |
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
@@ -27,7 +28,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro.
 
 ### What gets installed
 
@@ -41,7 +42,12 @@ Everything lives inside `.claude/`. Nothing touches your PATH or runs in the bac
 
 ### Requirements
 
-Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Two skills have extra dependencies.
+Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Three skills have extra dependencies.
+
+`/start-vibing` needs a working local toolchain, since it builds and runs a real application:
+
+- **Node 22+**, **pnpm 10** (`corepack enable && corepack prepare pnpm@10.33.0 --activate`), and a **running Docker daemon** for the Postgres container. The skill preflights all three and stops early rather than failing halfway through a scaffold.
+- `--deploy` additionally assumes access to `gitea.hoth.cc` and the `hoth.cc` manifests repo. It always confirms before creating a remote repo or pushing a manifest.
 
 `/browse` requires the official **`playwright-cli`** binary (`@playwright/cli`) on `PATH`:
 

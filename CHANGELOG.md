@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.4.0] - 2026-08-06
+
+### Added
+
+- `/start-vibing` skill — go from an idea to a running application on the canonical
+  stack. Two gated phases (shape, then stack-deltas-and-confirm) keep the interrogation
+  lighter than `/spec`'s five, then an 11-step build runs straight through to a dev
+  server serving real rows. Governed by an Iron Law borrowed in spirit from
+  `/investigate`: never hand back a scaffold that does not run — every build step ends
+  in a verification command, and a red gate is fixed rather than papered over with
+  `--force` or `ignoreBuildErrors`. The finish line is a working vertical slice (Prisma
+  model → route handler → `lib/api.ts` → page → passing test), not a placeholder tree,
+  and the run ends with a project `CLAUDE.md`, an initial commit, and a brief archived
+  to `.context/vibes/`. Flags: `--service`, `--here`, `--no-slice`, `--deploy`.
+- `start-vibing/stack-app.md` and `start-vibing/stack-service.md` — companion reference
+  files following the `review/checklist.md` precedent, keeping `SKILL.md` scannable
+  while holding the boilerplate. `stack-app.md` codifies the default Next.js shape
+  (pnpm 10, Tailwind 3.4 + dark-only HSL tokens, no auth, plain `fetch` in `lib/api.ts`,
+  Prisma client generated to `lib/generated/prisma`), with every config embedded verbatim
+  so the skill is self-contained. Comments encoding real production failure modes (the
+  `pg.Pool` timeouts, the load-bearing `prisma.config.ts`, the `vitest-env.d.ts`
+  reference directive) are carried across intact; `typescript.ignoreBuildErrors` is
+  deliberately excluded, with a note explaining why a fresh project should not start
+  there. `stack-service.md` covers the `--service` shape (Fastify 5 + Drizzle + Vite SPA,
+  npm workspaces, injected DB handle) and tabulates its deliberate divergences so they
+  are not "fixed" toward the Next.js conventions.
+- `/start-vibing` documented in `README.md` (skill table, install instructions, and a
+  Requirements entry for its Node/pnpm/Docker preflight) and the project `CLAUDE.md`
+  structure tree.
+
 ## [0.3.2] - 2026-06-25
 
 ### Changed
