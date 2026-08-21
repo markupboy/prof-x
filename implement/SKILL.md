@@ -58,6 +58,10 @@ ls ~/.claude/skills/ship/SKILL.md \
    ~/.claude/skills/prof-x/ship/SKILL.md \
    ~/.cursor/skills/ship/SKILL.md 2>/dev/null | head -1
 
+ls ~/.claude/skills/browse/SKILL.md \
+   ~/.claude/skills/prof-x/browse/SKILL.md \
+   ~/.cursor/skills/browse/SKILL.md 2>/dev/null | head -1
+
 ls ~/.cursor/skills-cursor/review-bugbot/SKILL.md 2>/dev/null
 ```
 
@@ -293,7 +297,7 @@ formatting in files you touched). Do not expand scope.
 
 ---
 
-## Syncing: Ask the user if they'd like to ship - if they say yes, run the /ship skill. If they mention "draft" be sure to set the PR that was opened to draft mode
+## Syncing: Ask the user if they'd like to ship - if they say yes, run the /ship skill. If they mention "draft" be sure to set the PR that was opened to draft mode. If the change is UI/UX, ask about screenshots before `/ship` runs.
 
 Summarize: key, branch, worktree path, AC checklist (met / not), test result,
 Bugbot result.
@@ -309,22 +313,112 @@ Treat any free-text "yes" as A, unless they mention **draft** (case-insensitive)
 
 ### If they ship (A or B)
 
+#### Screenshots (UI/UX only — before `/ship`)
+
+If this is a **UI/UX change**, AskUserQuestion **before** reading `/ship`. Skip
+this question entirely when the change is not user-visible (API-only, scripts,
+infra, docs with no rendered UI).
+
+Treat it as UI/UX when **any** of these are true:
+
+- Linear labels include `ui`, `ux`, `frontend`, `design`, or similar
+- Title or AC mentions a page, layout, modal, form, button, style, or visual
+  change
+- The diff touches templates, views, components, pages, CSS/HTML, or frontend
+  UI files (`jsx` / `tsx` / `vue` / `svelte` / `gjs` / `hbs` / `erb` / `slim`,
+  etc.)
+
+AskUserQuestion:
+
+- **A (recommend):** Generate screenshots of the UI changes with `/browse` and
+  add them to the PR description.
+- **B:** Ship without screenshots.
+
+Treat free-text "yes" / "screenshots" as A. "No" / "skip" is B.
+
+**If they want screenshots (A):**
+
+1. Resolve and read the `/browse` skill. Follow it. Do not drive
+   `playwright-cli` from memory. If the skill file is missing or
+   `playwright-cli` is not available, say so, skip screenshots, and continue
+   to `/ship` — do not block shipping.
+2. Set `SCREENSHOT_DIR="${TMPDIR:-/tmp}/implement-${LINEAR_KEY}"` and
+   `mkdir -p` it. This directory **must** be outside the worktree and the repo
+   root. Never write screenshots into the project, `public/`, `.github/`, or
+   any path `git` can see.
+3. Find a URL that shows the change. Prefer a server that is already running.
+   Otherwise start the project's dev command in the background, wait until it
+   serves, and **stop the process you started** after the shots. If you cannot
+   infer the URL or the page is auth-gated, AskUserQuestion (URL, and login
+   via `/browse`'s `show --annotate` / persisted auth if needed). If you still
+   cannot load the UI, skip screenshots and continue.
+4. Capture **1–3 shots of the changed UI**, not a tour of the app. Infer
+   routes from the diff. Default viewport `1440x900`; add `375x812` only when
+   the change is clearly responsive. Write files as
+   `$SCREENSHOT_DIR/{view}-{viewport}.png` (e.g. `settings-desktop.png`).
+5. **Read** each PNG so the user can see it (required by `/browse`).
+6. **HARD RULE — not in git, not in the repo.** Never `git add` these files,
+   never copy them into the worktree, never commit, never push, never host
+   them via a branch, orphan ref, gist, or GitHub/Gitea Release. Before
+   `/ship`, run `git status` in the worktree and confirm no screenshot path is
+   listed. If one is, remove it from the tree (not just unstage) and re-check.
+
+**If they skip screenshots (B), or this is not UI/UX:** continue to `/ship`
+with no screenshot work.
+
 Read the resolved `/ship` skill and run it to completion in this worktree. Do
 not skip its tests or pre-landing review.
 
-**Draft (B, or they mentioned "draft"):** after `/ship` prints the PR URL,
-convert that PR to draft. Do this even if `/ship` opened it as ready.
+**Draft (ship option B, or they mentioned "draft"):** after `/ship` prints the
+PR URL, convert that PR to draft. Do this even if `/ship` opened it as ready.
 
 - GitHub: `gh pr ready --undo` (current branch) or `gh pr ready <n> --undo`.
 - Gitea: use the Gitea MCP update-PR tool with draft/WIP if it exists.
 - If conversion fails, say so and give the PR URL — do not silently leave it
   ready without telling them.
 
+#### Attach screenshots to the PR description
+
+If `$SCREENSHOT_DIR` has PNGs, add them to the **PR description** (not a
+review comment, not the Linear ticket) after the PR exists — including when
+the PR was just converted to draft.
+
+1. Read the current body (`gh pr view --json body -q .body`, or the Gitea
+   equivalent).
+2. Host each PNG as a **PR attachment URL**, then embed it. Do **not** put
+   the files in the repository to get a URL.
+   - **Gitea** (origin host is not `github.com`): upload each file with
+     `POST /repos/{owner}/{repo}/issues/{index}/assets` (`-F attachment=@file`;
+     PRs share the issue index). Use `browser_download_url` from the response.
+     Prefer the Gitea MCP if it exposes an equivalent; discover tools first.
+   - **GitHub:** there is no token API for `user-attachments`. Use `/browse`
+     on the PR URL. If signed out, `show --annotate` and AskUserQuestion so
+     they can log in. Focus the comment composer, `$B upload` each file from
+     `$SCREENSHOT_DIR` (GitHub injects `![…](https://github.com/user-attachments/assets/…)`
+     into the textarea), `eval` the textarea to collect those URLs, and **do
+     not submit the comment**.
+3. Update the PR body (`gh pr edit --body`, or Gitea update-PR), appending:
+
+   ```
+   ## Screenshots
+   ![settings — desktop](URL)
+   ```
+
+   One image per shot, alt text naming the view (and viewport if you captured
+   more than one).
+4. Confirm the description contains the images (`gh pr view` or a `/browse`
+   snapshot of the PR). Then `rm -rf "$SCREENSHOT_DIR"`.
+
+If upload fails: **do not** fall back to committing, releasing, or gisting
+the files. Leave `$SCREENSHOT_DIR` in place, tell the user the paths, and
+still print the PR URL.
+
 Then print the PR URL (and "draft" if converted). That is the finish line.
 
 ### If they do not ship
 
-Print the branch, worktree path, and that they can `/ship` later. Stop.
+Print the branch, worktree path, and that they can `/ship` later. Do **not**
+generate screenshots — they exist to go on the PR. Stop.
 
 ---
 
@@ -338,7 +432,11 @@ Print the branch, worktree path, and that they can `/ship` later. Stop.
 6. **Bugbot findings get fixed** on this workflow (then one re-run).
 7. **Ship only on request.** Draft means the opened PR is draft, not a different
    pipeline.
-8. **Never force-push. Never commit secrets.**
+8. **UI screenshots are opt-in and never land in git.** Prompt only for UI/UX
+   changes, only after they choose to ship. Files live under
+   `$TMPDIR/implement-{KEY}/`, go on the PR description as attachments, then
+   get deleted. Never commit, add, or otherwise store them in the repo.
+9. **Never force-push. Never commit secrets.**
 
 ## Handoff
 
