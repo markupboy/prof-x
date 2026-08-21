@@ -12,6 +12,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | Skill              | Mode                    | What it does                                                                           |
 | ------------------ | ----------------------- | -------------------------------------------------------------------------------------- |
 | `/spec`            | Principal engineer      | Interrogate intent across five phases, then file a backlog-ready Linear issue          |
+| `/implement`       | Staff engineer          | Pick up a Linear ticket, isolate it in a worktree, plan, implement, validate, optionally ship |
 | `/start-vibing`    | Staff engineer          | Idea → running app on the canonical stack, with one feature working end to end          |
 | `/plan-prod-review` | CPO / staff PM          | Evaluate the problem, align on the outcome, prep for breakdown and handoff             |
 | `/plan-eng-review` | Eng manager / Tech lead | Lock in architecture, data flow, diagrams, edge cases, and tests                       |
@@ -28,7 +29,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro.
 
 ### What gets installed
 
@@ -42,7 +43,13 @@ Everything lives inside `.claude/`. Nothing touches your PATH or runs in the bac
 
 ### Requirements
 
-Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Three skills have extra dependencies.
+Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Four skills have extra dependencies.
+
+`/implement` needs a Linear source of truth and will **stop immediately** if neither is present:
+
+- **Linear MCP or the `linear` CLI (required).** The skill fetches the ticket id, description, and acceptance criteria from Linear — it will not improvise them. MCP is preferred when authenticated; otherwise `linear` on `PATH` (or `npx @schpet/linear-cli`).
+- **`wt` (optional).** When Worktrunk is on `PATH`, ticket worktrees are created with `wt switch --create`. Otherwise the skill falls back to `git worktree add`.
+- **Bugbot (optional).** In Cursor, Validation runs `/review-bugbot` and remediates findings. When the subagent is unavailable, that step is skipped.
 
 `/start-vibing` needs a working local toolchain, since it builds and runs a real application:
 

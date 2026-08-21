@@ -488,9 +488,9 @@ Add to the standard template:
   "is this worth building" bar.
 - **After `/spec`:** if the spec carries architectural or design risk that needs
   review before implementation starts, suggest `/plan-eng-review`.
-- **For implementation:** the Linear issue is the handoff. The implementer can open
-  it and execute without re-asking the user.
-- **The `/spec` → `/ship` loop:** branch as `SCR-NNN-…` so Linear auto-links the
-  branch to the ticket; `/pr-review` reads the ticket's acceptance criteria and
-  scores the PR against them; the eventual PR can include `Closes SCR-NNN` so
-  merging closes the ticket.
+- **For implementation:** `/implement` is the handoff. It fetches the Linear
+  issue and executes it without re-asking the user for the spec.
+- **The `/spec` → `/implement` → `/ship` loop:** `/implement` branches as
+  `SCR-NNN-…` so Linear auto-links the branch to the ticket; `/pr-review` reads the
+  ticket's acceptance criteria and scores the PR against them; the eventual PR can
+  include `Closes SCR-NNN` so merging closes the ticket.
