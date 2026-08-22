@@ -2,7 +2,26 @@
 
 ## [Unreleased]
 
+### Added
+
+- `/verify-this` skill — prove or disprove a specific claim with fresh local evidence
+  instead of recapping what was done. Restates the claim in falsifiable form (condition,
+  metric, threshold), captures a baseline from the old state and a treatment from the
+  changed state using the same command, data, warmup, and environment, then compares raw
+  artifacts and returns exactly one verdict: `VERIFIED`, `NOT VERIFIED`, or
+  `INCONCLUSIVE`. Covers code, CLI/TUI, UI, API, performance, and memory surfaces, with
+  an optional `/tmp/verify-this/<claim-slug>/` artifact layout that is skipped in favour
+  of minimal inline evidence when the artifacts could carry sensitive code, prompts,
+  screenshots, HTTP bodies, or heap data. Refuses unmeasurable claims ("the code is
+  cleaner") and does not soften a negative result.
+- `/verify-this` documented in `README.md` (skill table and install instructions) and
+  the project `CLAUDE.md` structure tree. `setup` needs no change — it globs every
+  directory containing a `SKILL.md`.
+
 ### Fixed
+
+- `README.md` — the install instruction's skill list was missing `/browse`; added it
+  alongside `/verify-this`.
 
 - `setup` — resolve `PROFX_DIR` with `pwd -P`. Invoking `./setup` through a symlinked
   path (e.g. `~/Code/prof-x` → `~/.claude/skills/prof-x`) left zsh's logical `pwd`
