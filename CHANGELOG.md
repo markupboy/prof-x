@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- `setup` — resolve `PROFX_DIR` with `pwd -P`. Invoking `./setup` through a symlinked
+  path (e.g. `~/Code/prof-x` → `~/.claude/skills/prof-x`) left zsh's logical `pwd`
+  pointing at the symlink, so `SKILLS_DIR` was the wrong parent, the
+  `basename = "skills"` guard failed, and Claude Code registration was silently
+  skipped — only Cursor got the symlinks.
+
 ## [0.4.0] - 2026-08-06
 
 ### Added
