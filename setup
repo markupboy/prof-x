@@ -2,7 +2,11 @@
 # prof-x setup — register all skills with Claude Code and Cursor
 set -e
 
-PROFX_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Resolve the physical path (pwd -P). Without it, invoking setup through a symlinked
+# path (e.g. ~/Code/prof-x -> ~/.claude/skills/prof-x) leaves zsh's logical pwd
+# pointing at the symlink, so SKILLS_DIR is the wrong parent and the Claude Code
+# registration below is silently skipped.
+PROFX_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 SKILLS_DIR="$(dirname "$PROFX_DIR")"
 
 # /pr-review wraps the pr-review-toolkit plugin. Install it if it's missing.
