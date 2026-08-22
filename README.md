@@ -19,6 +19,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
 | `/investigate`     | Systematic debugger     | Root-cause investigation before any fix. Iron Law: no fixes without root cause         |
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
+| `/pr-review-canvas` | Reviewer's reviewer    | Render a GitHub PR as an interactive HTML walkthrough — annotated diffs, moved-code detection, pseudocode summaries |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/retro`           | Engineering manager     | Analyze commit history, work patterns, and shipping velocity for the week.             |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
@@ -30,7 +31,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /ship, /retro, /browse, /verify-this.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /ship, /retro, /browse, /verify-this.
 
 ### What gets installed
 
@@ -44,7 +45,7 @@ Everything lives inside `.claude/`. Nothing touches your PATH or runs in the bac
 
 ### Requirements
 
-Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Four skills have extra dependencies.
+Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Five skills have extra dependencies.
 
 `/implement` needs a Linear source of truth and will **stop immediately** if neither is present:
 
@@ -61,6 +62,12 @@ Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP 
 
 - Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
 - First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
+
+`/pr-review-canvas` is GitHub-only and renders a local page:
+
+- **`gh` (required).** All PR data comes from `gh api` — there is no Gitea path, so this skill does not work against `gitea.hoth.cc`. Use `/pr-review` there.
+- **`python3` (required).** Used to assemble the HTML safely and to serve it via `python3 -m http.server` on `127.0.0.1:8432`. The page is served locally and never published.
+- Slash-only: the skill sets `disable-model-invocation: true`, so it runs when you type `/pr-review-canvas`, not on its own.
 
 `/pr-review` has two extra dependencies:
 

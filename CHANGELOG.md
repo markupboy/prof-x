@@ -14,15 +14,26 @@
   of minimal inline evidence when the artifacts could carry sensitive code, prompts,
   screenshots, HTTP bodies, or heap data. Refuses unmeasurable claims ("the code is
   cleaner") and does not soften a negative result.
-- `/verify-this` documented in `README.md` (skill table and install instructions) and
-  the project `CLAUDE.md` structure tree. `setup` needs no change — it globs every
-  directory containing a `SKILL.md`.
+- `/pr-review-canvas` skill — render a GitHub PR as an interactive HTML walkthrough that
+  reads like a peer talking you through the diff, rather than a wall of patch text.
+  Pulls the PR, its files, and its review comments in parallel via `gh api`, splits core
+  changes from mechanical ones, annotates the core files, and serves the result on
+  `127.0.0.1:8432`. Ships three assets alongside `SKILL.md`: `styles.css` (dark theme,
+  sticky file headers and notes), `renderer.js` (`toggle`, `toggleBP`, `esc`, and a
+  `renderDiff` that filters import-only lines, collapses whitespace-only changes, and
+  tints moved code blue/purple instead of red/green), and `template.html` (four
+  injection markers the Python assembly step fills). Patches are routed through `jq` to
+  a JSON file and injected with `<`, `>`, and `&` escaped, so a diff containing a
+  literal `</script>` cannot terminate the embedding script tag early. Marked
+  `disable-model-invocation: true` — it runs on `/pr-review-canvas`, not on its own.
+- `/verify-this` and `/pr-review-canvas` documented in `README.md` (skill table,
+  install instructions, and a Requirements entry for `/pr-review-canvas`'s GitHub-only
+  `gh` + `python3` dependencies) and the project `CLAUDE.md` structure tree.
 
 ### Fixed
 
 - `README.md` — the install instruction's skill list was missing `/browse`; added it
   alongside `/verify-this`.
-
 - `setup` — resolve `PROFX_DIR` with `pwd -P`. Invoking `./setup` through a symlinked
   path (e.g. `~/Code/prof-x` → `~/.claude/skills/prof-x`) left zsh's logical `pwd`
   pointing at the symlink, so `SKILLS_DIR` was the wrong parent, the
