@@ -12,6 +12,7 @@ prof-x/
 ├── review/           # /review skill + checklist.md (pre-landing review)
 ├── investigate/      # /investigate skill (systematic root-cause debugging)
 ├── pr-review/        # /pr-review skill (saves to file; wraps pr-review-toolkit)
+├── pr-review-canvas/ # /pr-review-canvas skill (interactive HTML PR walkthrough) + styles.css, renderer.js, template.html
 ├── ship/             # /ship skill (release workflow)
 ├── retro/            # /retro skill (engineering retrospective)
 ├── browse/           # /browse skill (Playwright-cli QA / dogfooding browser)
