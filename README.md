@@ -20,7 +20,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | `/investigate`     | Systematic debugger     | Root-cause investigation before any fix. Iron Law: no fixes without root cause         |
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
 | `/pr-review-canvas` | Reviewer's reviewer    | Render a GitHub PR as an interactive HTML walkthrough — annotated diffs, moved-code detection, pseudocode summaries |
-| `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — never posting to GitHub |
+| `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/retro`           | Engineering manager     | Analyze commit history, work patterns, and shipping velocity for the week.             |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
@@ -70,9 +70,9 @@ Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP 
 - **`python3` (required).** Used to assemble the HTML safely and to serve it via `python3 -m http.server` on `127.0.0.1:8432`. The page is served locally and never published.
 - Slash-only: the skill sets `disable-model-invocation: true`, so it runs when you type `/pr-review-canvas`, not on its own.
 
-`/pr-feedback` is GitHub-only and read-only against GitHub:
+`/pr-feedback` is GitHub-only and read-only against GitHub by default:
 
-- **`gh` (required).** The feedback thread and PR context come from `gh api` (REST + GraphQL) — there is no Gitea path. Every call is a read; the skill never posts replies, resolves threads, or mutates anything on GitHub. Clarifying questions and push-back drafts are produced in the session for the author to post themselves.
+- **`gh` (required).** The feedback thread and PR context come from `gh api` (REST + GraphQL) — there is no Gitea path. Clarifying questions and push-back drafts are produced in the session for the author to post themselves; the skill never replies to a thread on its own initiative, but it may post a user-confirmed reply when explicitly asked. Resolving threads or any other mutation stays off-limits.
 
 `/pr-review` has two extra dependencies:
 

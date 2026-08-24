@@ -20,15 +20,17 @@ allowed-tools:
 
 You will validate one piece of GitHub PR review feedback and help the author respond to it well. The reviewer is not automatically right; neither is the author. Your job is to find out which, with evidence, before anyone writes code or replies.
 
-## Hard guardrail: never write to GitHub
+## Guardrail: no GitHub writes without explicit permission
 
-This skill is **read-only against GitHub**. Under no circumstances may you:
+By default this skill is **read-only against GitHub**. Never post a reply, comment, or review on your own initiative — clarifying questions and push-back drafts are delivered in this session for the author to post themselves.
 
-- post a reply, comment, or review to the PR or the thread
-- resolve, unresolve, or edit the thread
-- add reactions, labels, or any other mutation
+**The one exception:** when the user explicitly asks you to post a specific reply (e.g. approves a drafted push-back or clarifying questions for posting), you may post it. Even then:
 
-Every `gh` invocation must be a read (`gh api` GETs, `gh pr view`, `gh api graphql` queries — never mutations). Clarifying questions and push-back drafts are delivered **only in this session**, for the author to post themselves. This holds even if the user asks you to post — decline and hand them the text instead.
+- Show the exact final text and get the user's confirmation on that text before posting.
+- Post **replies only**. Never resolve or unresolve threads, edit or delete comments, add reactions or labels, or perform any other mutation — those remain off-limits regardless of permission.
+- To reply to an inline review thread: `gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments/$ROOT_COMMENT_ID/replies" -f body="..."` (use the thread's root comment id). For a general PR comment: `gh api "repos/$OWNER/$REPO/issues/$PR_NUMBER/comments" -f body="..."`.
+
+Everything else — fetching threads, PR metadata, file contents — must be reads (`gh api` GETs, `gh pr view`, `gh api graphql` queries).
 
 ## 1. Parse the link
 
@@ -137,19 +139,19 @@ For multi-point feedback, present a verdict per point and ask about each (batch 
 ### PROCEED — address the feedback
 
 - Implement the change **in the local working tree only**. If the local checkout is not on the PR's head branch, stop and tell the user to check it out first — do not edit an unrelated branch.
-- Never commit, never push, never post. Leave the changes staged-nothing, uncommitted, for the author to review.
+- Never commit, never push. Leave the changes staged-nothing, uncommitted, for the author to review. Don't reply to the thread unless the user explicitly asks you to (per the guardrail).
 - Run the narrowest relevant validation (the file's tests, a typecheck) when available.
 - Summarize what changed and why it satisfies the feedback, and remind the user that committing, pushing, and replying to the thread are theirs to do.
 
 ### CLARIFY — draft questions for the author
 
-- Write the clarifying questions **in this session only** — never post them to the thread, even if asked.
+- Write the clarifying questions **in this session**, for the author to relay — do not post them to the thread unless the user explicitly asks you to (per the guardrail).
 - Phrase them for the author to relay to the reviewer: specific, answerable, and neutral in tone. Each question should name the ambiguity and, where useful, the two readings it disambiguates ("Did you mean X or Y? X would imply..., Y would imply...").
 - Keep it short — one to three questions. A wall of questions reads as stonewalling.
 
 ### PUSH BACK — draft a justification for the author
 
-- Draft a reply **for the author to post themselves** — never post it.
+- Draft a reply **for the author to post themselves** — post it yourself only if the user explicitly asks and confirms the final text (per the guardrail).
 - The draft should be respectful and evidence-first: acknowledge the concern, state the finding, cite the specific file/line or commit that supports it, and leave the door open ("happy to change it if I'm missing something").
 - No sarcasm, no appeals to authority, no "as discussed". The author's credibility rides on this text.
 - Offer the draft in a fenced block so it is easy to copy.
