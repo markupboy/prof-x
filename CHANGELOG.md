@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-08-27
+
 ### Added
 
 - `/verify-this` skill — prove or disprove a specific claim with fresh local evidence
@@ -29,6 +31,17 @@
 - `/verify-this` and `/pr-review-canvas` documented in `README.md` (skill table,
   install instructions, and a Requirements entry for `/pr-review-canvas`'s GitHub-only
   `gh` + `python3` dependencies) and the project `CLAUDE.md` structure tree.
+
+### Changed
+
+- `/spec` — default standard issues now follow the PRO-8579 section order: Why,
+  Desired outcome, Current behavior (research), Proposed architecture, Scope /
+  non-goals, checkbox acceptance criteria, bounded open questions, and likely files.
+  Blocking product and architecture decisions must be resolved before filing.
+  Non-blocking implementation research may remain when it records evidence,
+  recommendation, verification, and impact. Effort estimates, rollback plans,
+  test-count tables, and similar sections are included only when they materially
+  reduce risk.
 
 ### Fixed
 
