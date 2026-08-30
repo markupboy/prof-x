@@ -280,8 +280,9 @@ gh pr create --title "<type>: <summary>" --body "<body>"
 
 Read the existing PR body (from the check above) and decide whether it needs changes:
 
-- Replace the `## Pre-Landing Review` section with this run's findings (from Step 3.5),
-  so resolved items are dropped and new ones appear.
+- Replace the `## Pre-Landing Review` section with this run's findings (from Step 3.5).
+  Resolved items are simply removed — do not mention that they were caught or fixed.
+  If this run found nothing, the section reads `No issues found.`
 - Rewrite the `## Summary` _only if_ the core functionality of the PR has materially
   changed or been updated. DO NOT update it with references to feedback fixes, test or
   comment updates, or minor structural changes.
