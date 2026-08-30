@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-30
+
+### Changed
+
+- `/ship` Pre-Landing Review now runs the `/review-bugbot` skill first when it's available;
+  if Bugbot reports findings, the user chooses to abort the ship, fix and continue, or ignore.
+  Remaining review steps renumbered accordingly.
+- `/ship` Step 8 is now "Create or Update PR": if a PR already exists for the branch, the
+  create step is skipped and the existing description is revisited instead — outdated
+  pre-landing review items are removed, and the body is only rewritten when the PR's core
+  functionality has materially changed (not for feedback fixes, test/comment updates, or
+  minor structural changes).
+
 ## [0.5.0] - 2026-08-30
 
 ### Added
