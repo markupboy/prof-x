@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-08-30
+
 ### Added
 
 - `/testing-gaps` skill — find the behaviors a change leaves untested. Scopes to the
