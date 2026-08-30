@@ -22,6 +22,7 @@ You are running the `/ship` workflow. This is a **non-interactive, fully automat
 - On `main` branch (abort)
 - Merge conflicts that can't be auto-resolved (stop, show conflicts)
 - Test failures (stop, show failures)
+- Bugbot reports findings and user chooses to abort or fix (not ignore) — see Step 3.5
 - Pre-landing review finds CRITICAL issues and user chooses to fix (not acknowledge or skip)
 - MINOR or MAJOR version bump needed (ask — see Step 4)
 
@@ -91,7 +92,28 @@ Review the diff for structural issues that tests don't catch.
 
    Read the first hit. If none of the paths exist, **STOP** and report the error.
 
-2. If available, run the /review-bugbot skill. If bugbot returns any findings, ask the user if they would like to abort the ship, fix the findings and continue, or ignore.
+2. **Bugbot (if available).** Available when `~/.cursor/skills-cursor/review-bugbot/SKILL.md`
+   exists **or** this session can launch a `bugbot` subagent:
+
+   ```bash
+   ls ~/.cursor/skills-cursor/review-bugbot/SKILL.md 2>/dev/null
+   ```
+
+   If neither, print `Bugbot skipped — not available in this session.` and continue to
+   step 3. Otherwise read that skill and launch **exactly one** `bugbot` subagent
+   (`run_in_background: false`, `description: "Bugbot"`, `subagent_type: "bugbot"`) with:
+
+   ```text
+   Full Repository Path: <absolute repo path>
+   Diff: branch changes
+   ```
+
+   If the subagent fails, retry once; if it fails again, note the error and continue.
+   If Bugbot returns any findings, output them, then AskUserQuestion with options:
+   A) Abort the ship, B) Fix the findings and continue, C) Ignore and continue.
+   On B, apply the fixes, commit only the fixed files by name
+   (`git add <fixed-files> && git commit -m "fix: apply Bugbot findings"`), then **STOP**
+   and tell the user to run `/ship` again to re-test with the fixes applied.
 
 3. Run `git diff origin/main` to get the full diff (scoped to feature changes against the freshly-fetched remote main).
 
@@ -220,7 +242,13 @@ git remote get-url origin
   current branch, `title`/`body` as built below). If the Gitea host can't be determined,
   fall back to `gh`.
 
-If a PR for this branch has not yet been opened, continue to the create step. If one has been opened, skip create and continue to the update step.
+Check whether a PR is already open for this branch:
+
+- GitHub: `gh pr view --json number,url,body` — exits non-zero if none exists.
+- Gitea: `mcp__gitea__list_repo_pull_requests` with `state: "open"`, filtered to
+  `head` = the current branch.
+
+If none exists, continue to **Step 8a**. If one exists, skip create and continue to **Step 8b**.
 
 ## Step 8a: Create PR
 
@@ -250,11 +278,19 @@ gh pr create --title "<type>: <summary>" --body "<body>"
 
 ## Step 8b: Update PR
 
-Examine the existing PR description to see if any changes are necessary.
+Read the existing PR body (from the check above) and decide whether it needs changes:
 
-- Remove any outdated pre-landing review items
-- Update the description _only if_ the core functionality of the PR has materially changed or been updated. DO NOT update the description with references to feedback fixes, test or comment updates, or minor structural changes.
+- Replace the `## Pre-Landing Review` section with this run's findings (from Step 3.5),
+  so resolved items are dropped and new ones appear.
+- Rewrite the `## Summary` _only if_ the core functionality of the PR has materially
+  changed or been updated. DO NOT update it with references to feedback fixes, test or
+  comment updates, or minor structural changes.
 
+If nothing needs to change, leave the body alone. Otherwise write the edited body back
+(keep the title unless the PR's type/summary no longer fits):
+
+- GitHub: `gh pr edit --body "<body>"`
+- Gitea: `mcp__gitea__edit_pull_request` with the PR's `index` and the new `body`.
 
 **Output the PR URL** — this should be the final output the user sees.
 
@@ -265,7 +301,7 @@ Examine the existing PR description to see if any changes are necessary.
 - **Never skip tests.** If tests fail, stop.
 - **Never skip the pre-landing review.** If checklist.md is unreadable, stop.
 - **Never force push.** Use regular `git push` only.
-- **Never ask for confirmation** except for MINOR/MAJOR version bumps and CRITICAL review findings (one AskUserQuestion per critical issue with fix recommendation).
+- **Never ask for confirmation** except for MINOR/MAJOR version bumps, Bugbot findings (one AskUserQuestion: abort / fix / ignore), and CRITICAL review findings (one AskUserQuestion per critical issue with fix recommendation).
 - **Always use the 3-digit semver format** (`MAJOR.MINOR.PATCH`) from the VERSION file.
 - **Date format in CHANGELOG:** `YYYY-MM-DD`
 - **Split commits for bisectability** — each commit = one logical change.
