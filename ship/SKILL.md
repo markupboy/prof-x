@@ -91,25 +91,27 @@ Review the diff for structural issues that tests don't catch.
 
    Read the first hit. If none of the paths exist, **STOP** and report the error.
 
-2. Run `git diff origin/main` to get the full diff (scoped to feature changes against the freshly-fetched remote main).
+2. If available, run the /review-bugbot skill. If bugbot returns any findings, ask the user if they would like to abort the ship, fix the findings and continue, or ignore.
 
-3. Detect which stack layers apply from the files changed (Ruby/Rails, TypeScript/Node), then apply the review checklist in two passes:
+3. Run `git diff origin/main` to get the full diff (scoped to feature changes against the freshly-fetched remote main).
+
+4. Detect which stack layers apply from the files changed (Ruby/Rails, TypeScript/Node), then apply the review checklist in two passes:
    - **Pass 1 (CRITICAL):** the CRITICAL core items plus the CRITICAL items of any applicable stack layer
    - **Pass 2 (INFORMATIONAL):** all remaining categories (core + applicable stack layers)
 
-4. **Always output ALL findings** — both critical and informational. The user must see every issue found.
+5. **Always output ALL findings** — both critical and informational. The user must see every issue found.
 
-5. Output a summary header: `Pre-Landing Review: N issues (X critical, Y informational)`
+6. Output a summary header: `Pre-Landing Review: N issues (X critical, Y informational)`
 
-6. **If CRITICAL issues found:** For EACH critical issue, use a separate AskUserQuestion with:
+7. **If CRITICAL issues found:** For EACH critical issue, use a separate AskUserQuestion with:
    - The problem (`file:line` + description)
    - Your recommended fix
    - Options: A) Fix it now (recommend), B) Acknowledge and ship anyway, C) It's a false positive — skip
      After resolving all critical issues: if the user chose A (fix) on any issue, apply the recommended fixes, then commit only the fixed files by name (`git add <fixed-files> && git commit -m "fix: apply pre-landing review fixes"`), then **STOP** and tell the user to run `/ship` again to re-test with the fixes applied. If the user chose only B (acknowledge) or C (false positive) on all issues, continue with Step 4.
 
-7. **If only non-critical issues found:** Output them and continue. They will be included in the PR body at Step 8.
+8. **If only non-critical issues found:** Output them and continue. They will be included in the PR body at Step 8.
 
-8. **If no issues found:** Output `Pre-Landing Review: No issues found.` and continue.
+9. **If no issues found:** Output `Pre-Landing Review: No issues found.` and continue.
 
 Save the review output — it goes into the PR body in Step 8.
 
@@ -203,7 +205,7 @@ git push -u origin <branch-name>
 
 ---
 
-## Step 8: Create PR
+## Step 8: Create or Update PR
 
 Pick the PR host based on the remote — repos here are a mix of GitHub and Gitea:
 
@@ -217,6 +219,10 @@ git remote get-url origin
   `mcp__gitea__create_pull_request` (`base` = the repo's default branch, `head` = the
   current branch, `title`/`body` as built below). If the Gitea host can't be determined,
   fall back to `gh`.
+
+If a PR for this branch has not yet been opened, continue to the create step. If one has been opened, skip create and continue to the update step.
+
+## Step 8a: Create PR
 
 Build the title and body once, then pass them to whichever path applies:
 
@@ -241,6 +247,14 @@ GitHub path:
 ```bash
 gh pr create --title "<type>: <summary>" --body "<body>"
 ```
+
+## Step 8b: Update PR
+
+Examine the existing PR description to see if any changes are necessary.
+
+- Remove any outdated pre-landing review items
+- Update the description _only if_ the core functionality of the PR has materially changed or been updated. DO NOT update the description with references to feedback fixes, test or comment updates, or minor structural changes.
+
 
 **Output the PR URL** — this should be the final output the user sees.
 
