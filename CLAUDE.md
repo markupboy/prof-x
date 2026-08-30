@@ -18,6 +18,7 @@ prof-x/
 ├── retro/            # /retro skill (engineering retrospective)
 ├── browse/           # /browse skill (Playwright-cli QA / dogfooding browser)
 ├── verify-this/      # /verify-this skill (prove or disprove a claim with baseline/treatment evidence)
+├── testing-gaps/     # /testing-gaps skill (find untested behaviors in a diff, ranked, with test cases)
 ├── setup             # registers skills (Claude Code + Cursor) via symlinks + installs pr-review-toolkit
 ├── README.md
 ├── CHANGELOG.md
