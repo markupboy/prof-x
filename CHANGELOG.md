@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### Added
+
+- `/testing-gaps` skill — find the behaviors a change leaves untested. Scopes to the
+  branch diff against main by default (or a named path; never the whole repo), learns the
+  repo's test runner, layout, and conventions first, then enumerates every behavior in
+  scope — happy path, branches, error paths, boundaries, side effects, state transitions,
+  auth scoping, concurrency, integration seams — and matches each against the test tree.
+  A behavior counts as covered only if a test exercises it *and asserts on the outcome*;
+  tests that mock the subject, assert nothing, snapshot without intent, or are skipped are
+  reported as **weak tests**. Gaps are ranked CRITICAL / IMPORTANT / MINOR by what silently
+  breaks, and every gap ships with a concrete test case (file, title, arrange → act →
+  assert). Offers to write CRITICAL or CRITICAL + IMPORTANT tests, proving each one can
+  fail before running the full suite. Read-only otherwise; never commits or pushes.
+- `/testing-gaps` documented in `README.md` (skill table and install instructions), the
+  project `CLAUDE.md` structure tree, and the global `~/.claude/CLAUDE.md` skill list.
+
 ## [0.4.1] - 2026-08-27
 
 ### Added

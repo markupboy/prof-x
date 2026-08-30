@@ -25,6 +25,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | `/retro`           | Engineering manager     | Analyze commit history, work patterns, and shipping velocity for the week.             |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
 | `/verify-this`     | Skeptical verifier      | Prove or disprove a claim with baseline vs. treatment evidence. Returns VERIFIED / NOT VERIFIED / INCONCLUSIVE |
+| `/testing-gaps`    | QA lead                 | Find the behaviors a change leaves untested, ranked by blast radius, each with a concrete test case |
 
 ## Who is this for
 
@@ -32,7 +33,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /pr-feedback, /ship, /retro, /browse, /verify-this.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /pr-feedback, /ship, /retro, /browse, /verify-this, /testing-gaps.
 
 ### What gets installed
 
