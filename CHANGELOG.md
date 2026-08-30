@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-30
+
+### Added
+
+- `/pr-review-interactive` skill — the `/pr-review` analysis (steps 1–3b run by reference:
+  same toolkit, calibration, and Linear-awareness) served as a local interactive page
+  instead of a markdown file. Every finding is a card with its feedback and the exact diff
+  hunk it anchors to (anchored lines highlighted; off-diff anchors warned about). From the
+  page the user can ask Claude to **verify** a finding (false-positive check with cited
+  evidence), **reframe** it, **ask** about it in a per-finding thread, dismiss it, override
+  severity, and **queue** findings to submit as one GitHub review — or post a single inline
+  comment now — with the exact text confirmed in-page first. The loop is a bundled stdlib
+  `server.py` (static app + JSON API over a session dir, bound to `127.0.0.1`, with a
+  `Content-Type`/`Origin` guard on the message endpoint so a cross-origin page cannot
+  inject actions) plus a persistent `Monitor` tailing the page's inbox; Claude writes
+  `review.json` back and the page re-renders. "End session" exports
+  `pr_reviews/review_{N}.md` in the `/pr-review` format (adds a `POSTED` status) so
+  dismissals carry forward. GitHub-only, slash-only, never approves/merges/resolves.
+- `/pr-review-interactive` documented in `README.md` (skill table, install instructions,
+  requirements), the project `CLAUDE.md` structure tree, and the global `~/.claude/CLAUDE.md`
+  skill list.
+
 ## [0.4.2] - 2026-08-30
 
 ### Added
