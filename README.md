@@ -20,6 +20,7 @@ Included here are skills for plan review, code review, and engineering retrospec
 | `/investigate`     | Systematic debugger     | Root-cause investigation before any fix. Iron Law: no fixes without root cause         |
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
 | `/pr-review-canvas` | Reviewer's reviewer    | Render a GitHub PR as an interactive HTML walkthrough — annotated diffs, moved-code detection, pseudocode summaries |
+| `/pr-review-interactive` | Reviewer at the keyboard | Same analysis as `/pr-review`, served as a local interactive page — each finding with its diff hunk; verify, reframe, ask, dismiss, and queue → submit findings as one GitHub review from the browser |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/retro`           | Engineering manager     | Analyze commit history, work patterns, and shipping velocity for the week.             |
@@ -33,7 +34,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /pr-feedback, /ship, /retro, /browse, /verify-this, /testing-gaps.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /pr-review-interactive, /pr-feedback, /ship, /retro, /browse, /verify-this, /testing-gaps.
 
 ### What gets installed
 
@@ -70,6 +71,14 @@ Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP 
 - **`gh` (required).** All PR data comes from `gh api` — there is no Gitea path, so this skill does not work against `gitea.hoth.cc`. Use `/pr-review` there.
 - **`python3` (required).** Used to assemble the HTML safely and to serve it via `python3 -m http.server` on `127.0.0.1:8432`. The page is served locally and never published.
 - Slash-only: the skill sets `disable-model-invocation: true`, so it runs when you type `/pr-review-canvas`, not on its own.
+
+`/pr-review-interactive` is GitHub-only and runs a local server for the length of the session:
+
+- **`pr-review-toolkit` (required).** The analysis is `/pr-review`'s steps 1–3b, run by reference — same calibration, same Linear-awareness. Without the toolkit it stops.
+- **`gh` (required)** for PR data and for posting; **`python3` (required)** to run the bundled stdlib `server.py` on `127.0.0.1:8433` (next free port if taken). The page is local and never published.
+- Actions in the page (verify, reframe, ask, dismiss, queue, post) reach Claude through a file inbox that a persistent `Monitor` tails, so the terminal stays free; Claude writes the state file back and the page re-renders. Typing in the terminal still works.
+- GitHub writes happen only from an explicit in-page confirmation of the exact comment text — a single inline comment, or one review (`COMMENT` / `REQUEST_CHANGES`) containing every queued comment. It never approves, merges, resolves threads, or edits comments. WIP (no PR) sessions cannot post.
+- "End session" exports `pr_reviews/review_{N}.md` in the `/pr-review` format (with a `POSTED` status for comments that went to GitHub), so later `/pr-review` runs carry dismissals forward. Slash-only (`disable-model-invocation: true`).
 
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 
