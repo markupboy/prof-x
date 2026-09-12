@@ -13,6 +13,10 @@ consistent agent behavior.
 | Skill              | Mode                    | What it does                                                                           |
 | ------------------ | ----------------------- | -------------------------------------------------------------------------------------- |
 | `/spec`            | Principal engineer      | Interrogate intent across five phases, then file a backlog-ready Linear issue          |
+| `/fetch-ticket`    | Intake                  | Fetch tracker tickets into self-contained `.TICKET.md` files; fetch only, no analysis  |
+| `/review-ticket`   | Pre-pickup triage       | Compare a ticket (or set) against the codebase and save high-cost questions before work starts |
+| `/refine-ticket`   | Principal engineer      | Grill a ticket or idea into a verified REQUIREMENTS document — the what, not the how   |
+| `/create-implementation-plan` | Staff engineer | Turn REQUIREMENTS into a structured PLAN.md a fresh session can execute                |
 | `/start-vibing`    | Staff engineer          | Idea → running app on the canonical stack, with one feature working end to end          |
 | `/plan-prod-review` | CPO / staff PM          | Evaluate the problem, align on the outcome, prep for breakdown and handoff             |
 | `/plan-eng-review` | Eng manager / Tech lead | Lock in architecture, data flow, diagrams, edge cases, and tests                       |
@@ -22,9 +26,13 @@ consistent agent behavior.
 | `/fetch-pr-review` | Review secretary        | Capture every comment on a PR URL into a self-contained `.PR-REVIEW.md`; fetch only, no triage or replies |
 | `/refine-pr-review` | Author's advocate      | Triage a fetched PR-REVIEW file with the user, draft replies, and write REQUIREMENTS for accepted changes |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
+| `/handover`        | Author                  | Package a finished change as a reviewer-facing PR description / handover doc           |
+| `/self-review`     | Author as maintainer    | Review your own changeset until merge-ready and write a compact report proving it      |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
 | `/testing-gaps`    | QA lead                 | Find the behaviors a change leaves untested, ranked by blast radius, each with a concrete test case |
+| `/create-manual-test-instructions` | QA | Turn a ticket or REQUIREMENTS into a concise `.MANUAL-TEST.md` a non-author can follow |
+| `/memory-doctor`   | Housekeeping            | Drain project agent-memory: relocate each block into a user-controlled home or archive it |
 | `/use-conversational-language` | Copy editor | Write human-facing text in a concise, natural voice without changing what it says |
 
 ### Included rules
@@ -43,7 +51,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /fetch-pr-review, /refine-pr-review, /pr-feedback, /ship, /browse, /testing-gaps, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /fetch-pr-review, /refine-pr-review, /pr-feedback, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /use-conversational-language.
 
 ### What gets installed
 
@@ -57,7 +65,7 @@ Everything lives inside `.claude/` and `.cursor/`. Nothing touches your PATH or 
 
 ### Requirements
 
-Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). A few skills have extra dependencies.
+Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea, `linear` for Linear). A few skills have extra dependencies.
 
 `/start-vibing` needs a working local toolchain, since it builds and runs a real application:
 
@@ -69,7 +77,7 @@ Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP 
 - Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
 - First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
 
-`/fetch-pr-review` and `/review-code-assistant` use the connected host tools when a PR URL is given (`gh` / GitHub MCP, Azure DevOps MCP, or equivalent). Without a matching tool they stop (`/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR.
+`/fetch-ticket`, `/fetch-pr-review`, and `/review-code-assistant` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR.
 
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 
@@ -78,4 +86,4 @@ Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP 
 `/pr-review` has two extra dependencies:
 
 - **`pr-review-toolkit` (required).** `/pr-review` wraps it — it invokes `/pr-review-toolkit:review-pr` to do the actual analysis, then adds Linear-awareness and file output on top. `./setup` installs it for you (`claude plugin install pr-review-toolkit@claude-plugins-official`); without it, `/pr-review` cannot run.
-- **A Linear MCP server (optional).** When present, `/pr-review` fetches the linked Linear ticket and scores the PR against its acceptance criteria. When absent, it degrades gracefully — it notes the ticket reference but skips the criterion-level analysis. No Linear key in the branch/PR means this is skipped entirely.
+- **`linear` CLI (optional).** When present, `/pr-review` fetches the linked Linear ticket and scores the PR against its acceptance criteria. When absent, it degrades gracefully — it notes the ticket reference but skips the criterion-level analysis. No Linear key in the branch/PR means this is skipped entirely.

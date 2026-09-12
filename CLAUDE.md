@@ -6,6 +6,10 @@
 prof-x/
 ├── skills/           # slash-invoked skills (each dir has SKILL.md)
 │   ├── spec/             # /spec (interrogate intent → file a Linear issue)
+│   ├── fetch-ticket/     # /fetch-ticket (tracker issue → .TICKET.md)
+│   ├── review-ticket/    # /review-ticket (pre-pickup triage → .TICKET-REVIEW.md)
+│   ├── refine-ticket/    # /refine-ticket (ticket/idea → verified REQUIREMENTS)
+│   ├── create-implementation-plan/ # /create-implementation-plan (REQUIREMENTS → PLAN.md)
 │   ├── start-vibing/     # /start-vibing (idea → running app) + stack-app.md, stack-service.md
 │   ├── plan-prod-review/ # /plan-prod-review (CPO / staff PM plan review)
 │   ├── plan-eng-review/  # /plan-eng-review (eng manager / tech lead plan review)
@@ -15,9 +19,13 @@ prof-x/
 │   ├── fetch-pr-review/  # /fetch-pr-review (capture PR comments → .PR-REVIEW.md)
 │   ├── refine-pr-review/ # /refine-pr-review (triage a fetched PR-REVIEW → replies + REQUIREMENTS)
 │   ├── pr-feedback/      # /pr-feedback (validate a PR review thread → proceed / clarify / push back)
+│   ├── handover/         # /handover (package a finished change for review)
+│   ├── self-review/      # /self-review (author-side merge-ready review + report)
 │   ├── ship/             # /ship (release workflow)
 │   ├── browse/           # /browse (Playwright-cli QA / dogfooding browser)
 │   ├── testing-gaps/     # /testing-gaps (find untested behaviors in a diff, ranked, with test cases)
+│   ├── create-manual-test-instructions/ # /create-manual-test-instructions (ticket → .MANUAL-TEST.md)
+│   ├── memory-doctor/    # /memory-doctor (drain/relocate project agent-memory)
 │   └── use-conversational-language/ # /use-conversational-language (natural voice for human-facing text)
 ├── rules/            # always-on agent rules
 │   ├── git-read-only-by-default.md # require explicit approval for Git writes

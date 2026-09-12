@@ -4,6 +4,22 @@
 
 ### Added
 
+- `/fetch-ticket` skill: fetch tracker tickets into self-contained `.TICKET.md` files.
+  Fetch only — no analysis or planning.
+- `/review-ticket` skill: pre-pickup triage of a ticket or set against the codebase,
+  saved as `.TICKET-REVIEW.md` with only the high-cost questions worth raising.
+- `/refine-ticket` skill: grill a ticket or idea into a verified REQUIREMENTS document
+  (the what, not the how).
+- `/create-implementation-plan` skill: turn REQUIREMENTS into a structured PLAN.md a
+  fresh session can execute.
+- `/create-manual-test-instructions` skill: turn a ticket or REQUIREMENTS into a concise
+  `.MANUAL-TEST.md` a non-author can follow.
+- `/handover` skill: package a finished change as a reviewer-facing PR description /
+  handover doc.
+- `/self-review` skill: review your own changeset until merge-ready and write a compact
+  report proving it.
+- `/memory-doctor` skill: drain project agent-memory, relocating each block into a
+  user-controlled home or archiving it.
 - `/fetch-pr-review` skill: capture every comment on a PR URL into a self-contained
   `.PR-REVIEW.md` in the task's planning directory. Fetch only — no triage or replies.
 - `/refine-pr-review` skill: triage a fetched PR-REVIEW file with the user, draft
@@ -24,6 +40,9 @@
 
 ### Changed
 
+- GitHub / Gitea / Linear access goes through CLIs (`gh`, `tea`, `linear`), not forge
+  MCPs. `/fetch-ticket`, `/fetch-pr-review`, `/review-code-assistant`, `/pr-review`,
+  `/ship`, and `/spec` pick the CLI from the URL or git remote host.
 - Skill packages now live under `skills/` (e.g. `skills/review/`) so a sibling
   `rules/` directory can coexist without colliding with skill names.
   `setup` registers from `skills/` and still prunes pre-restructure symlinks
