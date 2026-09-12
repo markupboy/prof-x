@@ -18,6 +18,9 @@ consistent agent behavior.
 | `/plan-eng-review` | Eng manager / Tech lead | Lock in architecture, data flow, diagrams, edge cases, and tests                       |
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
+| `/review-code-assistant` | Pair reviewer     | Local read-only review of a branch/PR diff; suggest pasteable comments, never post     |
+| `/fetch-pr-review` | Review secretary        | Capture every comment on a PR URL into a self-contained `.PR-REVIEW.md`; fetch only, no triage or replies |
+| `/refine-pr-review` | Author's advocate      | Triage a fetched PR-REVIEW file with the user, draft replies, and write REQUIREMENTS for accepted changes |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
@@ -40,7 +43,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /pr-feedback, /ship, /browse, /testing-gaps, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /fetch-pr-review, /refine-pr-review, /pr-feedback, /ship, /browse, /testing-gaps, /use-conversational-language.
 
 ### What gets installed
 
@@ -54,7 +57,7 @@ Everything lives inside `.claude/` and `.cursor/`. Nothing touches your PATH or 
 
 ### Requirements
 
-Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). Four skills have extra dependencies.
+Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP for Gitea). A few skills have extra dependencies.
 
 `/start-vibing` needs a working local toolchain, since it builds and runs a real application:
 
@@ -65,6 +68,8 @@ Most skills only need `git` plus the host's CLI (`gh` for GitHub, the Gitea MCP 
 
 - Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
 - First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
+
+`/fetch-pr-review` and `/review-code-assistant` use the connected host tools when a PR URL is given (`gh` / GitHub MCP, Azure DevOps MCP, or equivalent). Without a matching tool they stop (`/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR.
 
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 

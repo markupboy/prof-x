@@ -4,6 +4,12 @@
 
 ### Added
 
+- `/fetch-pr-review` skill: capture every comment on a PR URL into a self-contained
+  `.PR-REVIEW.md` in the task's planning directory. Fetch only — no triage or replies.
+- `/refine-pr-review` skill: triage a fetched PR-REVIEW file with the user, draft
+  replies, and write REQUIREMENTS for accepted changes.
+- `/review-code-assistant` skill: local read-only review of a branch/PR diff;
+  suggest pasteable comments, never post.
 - `/use-conversational-language` skill: concise, natural voice for human-facing text
   (conversations, comments, commit messages) without changing content.
 - `no-nonsense-comments` always-on rule: durable comments that make sense without session
