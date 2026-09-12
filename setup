@@ -8,6 +8,9 @@ set -e
 # registration below is silently skipped.
 PROFX_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 SKILLS_DIR="$(dirname "$PROFX_DIR")"
+# Skill packages live under skills/. A sibling rules/ is reserved for always-on
+# agent rules and is not registered here yet.
+SKILLS_SRC="$PROFX_DIR/skills"
 
 # /pr-review wraps the pr-review-toolkit plugin. Install it if it's missing.
 # Non-fatal: a failure here must not abort the skill symlinking above.
@@ -49,7 +52,7 @@ link_skills_into() {
 
   local linked=()
   local skill_dir skill_name target
-  for skill_dir in "$PROFX_DIR"/*/; do
+  for skill_dir in "$SKILLS_SRC"/*/; do
     if [ -f "$skill_dir/SKILL.md" ]; then
       skill_name="$(basename "$skill_dir")"
       # Skip node_modules
@@ -57,21 +60,22 @@ link_skills_into() {
       target="$dest_dir/$skill_name"
       # Create or update symlink; skip if a real file/directory exists
       if [ -L "$target" ] || [ ! -e "$target" ]; then
-        ln -snf "$PROFX_DIR/$skill_name" "$target"
+        ln -snf "$SKILLS_SRC/$skill_name" "$target"
         linked+=("$skill_name")
       fi
     fi
   done
 
-  # Remove stale symlinks: any symlink in dest_dir that points into PROFX_DIR
-  # but whose source skill directory no longer exists (e.g. a renamed/removed skill).
+  # Remove stale symlinks: any symlink in dest_dir that points into this clone
+  # (current skills/ layout or a pre-restructure root skill dir) but whose
+  # source skill directory no longer exists (e.g. a renamed/removed skill).
   local pruned=()
   local link_dest
   for target in "$dest_dir"/*; do
     [ -L "$target" ] || continue
     link_dest="$(readlink "$target")"
     case "$link_dest" in
-      "$PROFX_DIR"/*)
+      "$SKILLS_SRC"/*|"$PROFX_DIR"/*)
         if [ ! -f "$link_dest/SKILL.md" ]; then
           rm -f "$target"
           pruned+=("$(basename "$target")")

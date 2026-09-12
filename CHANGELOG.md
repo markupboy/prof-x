@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Skill packages now live under `skills/` (e.g. `skills/review/`) so a sibling
+  `rules/` directory can be added later without colliding with skill names.
+  `setup` registers from `skills/` and still prunes pre-restructure symlinks
+  that pointed at the repo root. Nested-skill path fallbacks in `/implement`,
+  `/review`, and `/ship` include the new clone path.
+
 ## [0.5.1] - 2026-08-30
 
 ### Changed

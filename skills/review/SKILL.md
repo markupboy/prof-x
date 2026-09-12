@@ -37,6 +37,7 @@ the first one that exists:
 ```bash
 ls .claude/skills/review/checklist.md \
    ~/.claude/skills/review/checklist.md \
+   ~/.claude/skills/prof-x/skills/review/checklist.md \
    ~/.claude/skills/prof-x/review/checklist.md 2>/dev/null | head -1
 ```
 

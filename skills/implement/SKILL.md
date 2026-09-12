@@ -55,10 +55,12 @@ Progress:
 
 ```bash
 ls ~/.claude/skills/ship/SKILL.md \
+   ~/.claude/skills/prof-x/skills/ship/SKILL.md \
    ~/.claude/skills/prof-x/ship/SKILL.md \
    ~/.cursor/skills/ship/SKILL.md 2>/dev/null | head -1
 
 ls ~/.claude/skills/browse/SKILL.md \
+   ~/.claude/skills/prof-x/skills/browse/SKILL.md \
    ~/.claude/skills/prof-x/browse/SKILL.md \
    ~/.cursor/skills/browse/SKILL.md 2>/dev/null | head -1
 
