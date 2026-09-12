@@ -238,16 +238,16 @@ git remote get-url origin
 
 - If the host is `github.com` → create the PR with `gh` (below).
 - If the host is a Gitea instance (anything else self-hosted) → parse `owner` and `repo`
-  from the remote URL and create the PR with the Gitea MCP tool
-  `mcp__gitea__create_pull_request` (`base` = the repo's default branch, `head` = the
-  current branch, `title`/`body` as built below). If the Gitea host can't be determined,
-  fall back to `gh`.
+  from the remote URL and create the PR with **`tea`** (not a Gitea MCP). Do not guess
+  flags: `tea --help` / `tea pulls --help`. Use `tea` to create with `base` = the repo's
+  default branch, `head` = the current branch, and `title`/`body` as built below. If
+  `tea` is not on PATH, **STOP** and tell the user to install it. If the Gitea host
+  can't be determined, fall back to `gh`.
 
 Check whether a PR is already open for this branch:
 
 - GitHub: `gh pr view --json number,url,body` — exits non-zero if none exists.
-- Gitea: `mcp__gitea__list_repo_pull_requests` with `state: "open"`, filtered to
-  `head` = the current branch.
+- Gitea: `tea pulls` (open), filtered to the current branch as head. Consult `tea pulls --help`.
 
 If none exists, continue to **Step 8a**. If one exists, skip create and continue to **Step 8b**.
 
@@ -292,7 +292,7 @@ If nothing needs to change, leave the body alone. Otherwise write the edited bod
 (keep the title unless the PR's type/summary no longer fits):
 
 - GitHub: `gh pr edit --body "<body>"`
-- Gitea: `mcp__gitea__edit_pull_request` with the PR's `index` and the new `body`.
+- Gitea: `tea` to edit the PR body (consult `tea pulls --help` / `tea pr --help`). Do not use a Gitea MCP.
 
 **Output the PR URL** — this should be the final output the user sees.
 

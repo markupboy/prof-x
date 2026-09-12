@@ -76,9 +76,9 @@ Do NOT proceed until all five are answered without hand-waving.
 
 **Step 1b (--dedupe is ON by default):** Before drafting, run a dedupe check
 against Linear. Extract 2–4 keywords from the user's request and the working title
-you have in mind. Do NOT guess MCP tool names — list the available MCP tools (or
-read the Linear server's tool schemas) first, then call the appropriate "list/search
-issues" tool, scoped to open issues, with those keywords.
+you have in mind. Use the **`linear` CLI** (not Linear MCP). Do not guess flags:
+`linear --help` / `linear issue query --help`. Search open issues with those
+keywords (e.g. `linear issue query --search "<keywords>" --all-teams`).
 
 Interpret the result:
 
@@ -86,12 +86,10 @@ Interpret the result:
 - **1+ matches:** surface them via AskUserQuestion: "Found {N} similar open
   issue(s): {KEY1} ({title}), {KEY2} ({title})… Merge with one of these, or file a
   new spec anyway?" Options: pick one to merge into / file new anyway / cancel.
-- **No Linear MCP available:** print: "Dedupe skipped — no Linear MCP server in this
-  session. Continuing without duplicate check. Use `--no-dedupe` to silence." Continue.
-- **Auth required:** call the server's auth tool once and retry. If it still fails,
-  print: "Dedupe skipped — Linear auth failed. Continuing without check." Continue.
-- **Other error:** print: "Dedupe failed — {short reason}. Use `--no-dedupe` to
-  silence. Continuing without check." Continue.
+- **`linear` not on PATH:** print: "Dedupe skipped — `linear` CLI not on PATH.
+  Continuing without duplicate check. Use `--no-dedupe` to silence." Continue.
+- **Auth / other error:** print: "Dedupe skipped — Linear CLI failed ({short
+  reason}). Use `--no-dedupe` to silence. Continuing without check." Continue.
 
 The dedupe check is best-effort. Never block Phase 2 on a Linear failure.
 
@@ -171,21 +169,21 @@ content" rules.
 
 #### File to Linear (default; skipped by `--local`)
 
-Don't guess MCP tool names — list the available MCP tools (or read the Linear
-server's tool schemas) first, then:
+Use the **`linear` CLI** (not Linear MCP). Do not guess flags: `linear --help` /
+`linear issue create --help`.
 
-1. **Resolve the team.** Call the "list teams" tool. If exactly one team exists, use
-   it. If several, AskUserQuestion which team to file under. Optionally set a project
-   and/or labels if they're obvious from the conversation; otherwise skip them.
-2. **Create the issue** via the Linear "create/save issue" tool with the rendered
-   title + body. Capture the returned identifier (e.g. `SCR-123`) and URL.
+1. **Resolve the team.** List teams with `linear team` (`linear team --help`). If exactly one team exists, use it. If several, AskUserQuestion which team to file under. Optionally set a project and/or labels if they're obvious from the conversation; otherwise skip them.
+2. **Create the issue** with `linear issue create` (`--title`, `--description-file` for
+   the rendered body, `--no-interactive`, `--team` when not the default). Capture the
+   returned identifier (e.g. `SCR-123`) and URL (`linear issue url` if the create
+   output doesn't include it).
 3. Print `Filed: <url>`.
 
 **Graceful degradation** — if any of these hold, do NOT invent anything: print the
 rendered title + body in a fenced block for manual paste, then proceed to archive.
 
-- No Linear MCP server in this session.
-- Auth fails after one retry of the server's auth tool.
+- `linear` is not on PATH.
+- The create command fails (auth or otherwise).
 - `--local` was passed.
 
 Capture the Linear key (or empty if not filed) — it goes in the archive frontmatter.

@@ -2,7 +2,7 @@
 name: fetch-pr-review
 version: 1.0.0
 description: |
-  Fetch all reviewer comments from a pull request URL (GitHub, Azure DevOps, …)
+  Fetch all reviewer comments from a pull request URL (GitHub or Gitea)
   and save them as a self-contained markdown PR-REVIEW file in the task's
   planning directory. Fetch only — no fixing or replying. Use when asked to
   "fetch the PR review", "save the review comments", "pull comments from this
@@ -24,10 +24,15 @@ on (e.g. via `/refine-pr-review`).
 
 ## Source & access
 
-Identify the platform from the PR URL (host shape) and fetch through the matching MCP server or
-CLI — e.g. **GitHub MCP / `gh`** for GitHub PRs, **Azure DevOps MCP** for ADO pull requests. Use
-whichever equivalent tools are connected; tool name prefixes vary by config. If the input is
-ambiguous, or no matching MCP/CLI is available, ask the user / stop — don't guess.
+Identify the platform from the PR URL host. Fetch with the matching CLI — do not use a
+GitHub or Gitea MCP:
+
+- `github.com` → **`gh`**
+- any other host (self-hosted Gitea) → **`tea`**
+
+Do not guess flags: `gh --help` / `tea --help` and the subcommand help. If the matching CLI is
+not on PATH, **STOP** and tell the user to install it. If the input is ambiguous, ask — don't
+guess.
 
 ## Golden rule: never assume — ask
 
@@ -40,7 +45,7 @@ an answer.
 1. **Resolve the input.** Accept a full PR URL; extract repo/project and PR id. If unrecognizable,
    ask.
 2. **Fetch the PR metadata** — title, description, source/target branch, state, author, linked
-   ticket/work item — and **all feedback**:
+   ticket — and **all feedback**:
    - inline review threads (file, line, code context, full reply chain);
    - top-level review verdicts (approve / request changes / …) with their summary text;
    - general conversation comments;
@@ -64,7 +69,7 @@ an answer.
 ## Status flags
 
 Capture **every** comment, resolved or not, with its state from the platform's own signal (e.g.
-GitHub thread resolution, ADO thread status):
+GitHub thread resolution, Gitea review conversation state):
 
 - **Open / active** → actionable; no flag needed.
 - **Resolved** (closed, fixed, won't fix, …) → keep it, marked **resolved**, with the platform's

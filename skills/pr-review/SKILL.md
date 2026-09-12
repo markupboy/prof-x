@@ -22,7 +22,7 @@ You will review a PR (or WIP changes) using the pr-review-toolkit and automatica
 ## Requirements
 
 - **`pr-review-toolkit` (required):** this skill wraps it. Step 3 invokes `/pr-review-toolkit:review-pr` for the actual analysis. If the toolkit is not installed, **STOP** and tell the user to install it — do not attempt to substitute your own ad-hoc review.
-- **Linear MCP (optional):** used in steps 1c–1d for ticket-aware analysis. If no Linear MCP is available, do not invent ticket contents — note that the reference exists but couldn't be retrieved, and proceed (see step 1d). If no Linear key is found at all, skip Linear handling entirely.
+- **`linear` CLI (optional):** used in steps 1c–1d for ticket-aware analysis. If `linear` is not on PATH, do not invent ticket contents — note that the reference exists but couldn't be retrieved, and proceed (see step 1d). If no Linear key is found at all, skip Linear handling entirely.
 
 ## 1. Detect context
 
@@ -47,7 +47,7 @@ If the host is `github.com`, use the **GitHub path**. Otherwise (a self-hosted G
 
 - Parse `owner` and `repo` from the remote URL.
 - Get the current/remote branch name (current branch, or the upstream tracking branch with its remote prefix stripped, as above).
-- Use `mcp__gitea__list_repo_pull_requests` (state `open`) and match the PR whose `head` branch equals the remote branch name. If a match is found, fetch its details with `mcp__gitea__get_pull_request_by_index`.
+- Use **`tea`** (not a Gitea MCP). Do not guess flags: `tea --help` / `tea pulls --help`. List open pulls and match the PR whose head branch equals the remote branch name; if a match is found, fetch that PR's details. If `tea` is not on PATH, **STOP** and tell the user to install it.
 - No match means no PR was found.
 
 ### Both paths
@@ -84,8 +84,8 @@ Record the **first** key found as `LINEAR_KEY`. If multiple distinct keys appear
 
 If `LINEAR_KEY` is set, attempt to fetch the issue's details so the review can compare the PR against the ticket's stated requirements.
 
-- **Preferred path — Linear MCP:** if a Linear MCP server is available in this session, use it. Do not guess tool names: list the MCP tools (or read the server's tool schemas) first, then call the appropriate "get issue" / "get issue by identifier" tool with `LINEAR_KEY`. If the server reports it needs authentication, call its `mcp_auth` tool once and retry. If authentication still fails, fall through to the fallback.
-- **Fallback — none:** if no Linear MCP is available or the fetch fails, do **not** invent ticket details. Record that the ticket reference exists but its contents could not be retrieved, and proceed.
+- **Preferred path — `linear` CLI:** if `linear` is on PATH, fetch the issue with it (e.g. `linear issue view "$LINEAR_KEY"`). Do not guess flags: `linear issue --help` / `linear issue view --help`. Do not use Linear MCP.
+- **Fallback — none:** if `linear` is missing or the fetch fails, do **not** invent ticket details. Record that the ticket reference exists but its contents could not be retrieved, and proceed.
 
 When a fetch succeeds, capture:
 
@@ -135,7 +135,7 @@ Exhaustive reviews trend toward pedantry more than usefulness. We are a working 
 - For each acceptance criterion or stated requirement, classify it as **met**, **partially met**, **not met**, or **out of scope for this PR** (e.g., explicitly deferred). Cite the file/line evidence for "met" verdicts when practical.
 - Treat any **not met** or **partially met** criterion as a finding in the regular sections (typically `Important` for missing required behavior, `Suggestion` for nice-to-have polish that the ticket called out). Use the issue body to quote the ticket's wording so the gap is traceable.
 - Flag **scope creep**: substantial changes in the diff that have no basis in the ticket (refactors, unrelated cleanups, feature additions). Surface these as `Suggestion` findings unless they introduce real risk, in which case escalate.
-- If `LINEAR_KEY` was found but `LINEAR_CONTEXT` could not be fetched (auth failure, no MCP, etc.), do not fabricate ticket contents. Note the limitation in step 7's Description block and skip the criterion-level analysis.
+- If `LINEAR_KEY` was found but `LINEAR_CONTEXT` could not be fetched (`linear` missing or the fetch failed), do not fabricate ticket contents. Note the limitation in step 7's Description block and skip the criterion-level analysis.
 
 ## 3b. Triage findings for realism
 

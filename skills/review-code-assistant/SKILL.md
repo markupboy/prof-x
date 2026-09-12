@@ -57,9 +57,14 @@ against the main branch). Always state which target was chosen so the user can c
 
 ## Enrich from the PR link
 
-When a URL is given, identify the platform from its host and fetch through whatever is connected
-(a GitHub tool, an Azure DevOps tool, etc.) — use the intent, not a fixed tool. If no matching
-tool is available, or no link was given, degrade gracefully to a local-diff-only review, or ask.
+When a URL is given, identify the platform from its host and fetch with the matching CLI — do not
+use a GitHub or Gitea MCP:
+
+- `github.com` → **`gh`**
+- any other host (self-hosted Gitea) → **`tea`**
+
+Do not guess flags: `gh --help` / `tea --help` and the subcommand help. If the matching CLI is not
+on PATH, or no link was given, degrade gracefully to a local-diff-only review, or ask.
 
 - Use the title and description to understand intent.
 - Follow linked issues and PRs: a linked issue's description is part of the intent, and a linked
