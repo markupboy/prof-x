@@ -17,7 +17,11 @@ prof-x/
 │   ├── testing-gaps/     # /testing-gaps (find untested behaviors in a diff, ranked, with test cases)
 │   └── use-conversational-language/ # /use-conversational-language (natural voice for human-facing text)
 ├── rules/            # always-on agent rules
-│   └── no-nonsense-comments.md # durable, context-free code comments
+│   ├── git-read-only-by-default.md # require explicit approval for Git writes
+│   ├── no-nonsense-comments.md # durable, context-free code comments
+│   ├── plans-directory.md # consistent location and naming for planning documents
+│   ├── self-contained-docs.md # concise documents executable without prior context
+│   └── write-realistic-texts.md # natural voice and approval for user-authored text
 ├── setup             # registers skills and rules (Claude Code + Cursor) + installs pr-review-toolkit
 ├── README.md
 ├── CHANGELOG.md

@@ -28,7 +28,11 @@ consistent agent behavior.
 
 | Rule | What it does |
 | ---- | ------------ |
+| `git-read-only-by-default` | Keeps Git read-only unless the user explicitly requests a write action |
 | `no-nonsense-comments` | Short, durable comments that make sense without session context. Uses `/use-conversational-language` for any it writes |
+| `plans-directory` | Saves planning documents in a consistent project-relative directory structure |
+| `self-contained-docs` | Makes plans and design documents concise and executable without prior context |
+| `write-realistic-texts` | Applies a conversational voice and explicit publication approval to user-authored text |
 
 ## Who is this for
 

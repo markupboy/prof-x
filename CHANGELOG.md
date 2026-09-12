@@ -8,6 +8,8 @@
   (conversations, comments, commit messages) without changing content.
 - `no-nonsense-comments` always-on rule: durable comments that make sense without session
   context. `setup` registers `rules/` into Claude Code and Cursor alongside skills.
+- Four always-on rules: `git-read-only-by-default`, `plans-directory`,
+  `self-contained-docs`, and `write-realistic-texts`.
 
 ### Removed
 
