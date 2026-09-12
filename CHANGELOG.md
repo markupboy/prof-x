@@ -2,10 +2,17 @@
 
 ## [Unreleased]
 
+### Added
+
+- `/use-conversational-language` skill: concise, natural voice for human-facing text
+  (conversations, comments, commit messages) without changing content.
+- `no-nonsense-comments` always-on rule: durable comments that make sense without session
+  context. `setup` registers `rules/` into Claude Code and Cursor alongside skills.
+
 ### Changed
 
 - Skill packages now live under `skills/` (e.g. `skills/review/`) so a sibling
-  `rules/` directory can be added later without colliding with skill names.
+  `rules/` directory can coexist without colliding with skill names.
   `setup` registers from `skills/` and still prunes pre-restructure symlinks
   that pointed at the repo root. Nested-skill path fallbacks in `/implement`,
   `/review`, and `/ship` include the new clone path.

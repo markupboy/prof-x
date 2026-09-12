@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# prof-x setup — register all skills with Claude Code and Cursor
+# prof-x setup — register all skills and rules with Claude Code and Cursor
 set -e
 
 # Resolve the physical path (pwd -P). Without it, invoking setup through a symlinked
@@ -8,9 +8,22 @@ set -e
 # registration below is silently skipped.
 PROFX_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 SKILLS_DIR="$(dirname "$PROFX_DIR")"
-# Skill packages live under skills/. A sibling rules/ is reserved for always-on
-# agent rules and is not registered here yet.
 SKILLS_SRC="$PROFX_DIR/skills"
+RULES_SRC="$PROFX_DIR/rules"
+
+print_link_summary() {
+  local label="$1" dest_dir="$2" kind="$3" linked_list="$4" pruned_list="$5"
+
+  echo "  $label ($dest_dir):"
+  if [ -n "$linked_list" ]; then
+    echo "    linked $kind: $linked_list"
+  else
+    echo "    linked $kind: (already up to date)"
+  fi
+  if [ -n "$pruned_list" ]; then
+    echo "    pruned stale $kind: $pruned_list"
+  fi
+}
 
 # /pr-review wraps the pr-review-toolkit plugin. Install it if it's missing.
 # Non-fatal: a failure here must not abort the skill symlinking above.
@@ -84,15 +97,45 @@ link_skills_into() {
     esac
   done
 
-  echo "  $label ($dest_dir):"
-  if [ ${#linked[@]} -gt 0 ]; then
-    echo "    linked skills: ${linked[*]}"
-  else
-    echo "    linked skills: (already up to date)"
-  fi
-  if [ ${#pruned[@]} -gt 0 ]; then
-    echo "    pruned stale skills: ${pruned[*]}"
-  fi
+  print_link_summary "$label" "$dest_dir" "skills" "${linked[*]}" "${pruned[*]}"
+}
+
+link_rules_into() {
+  setopt local_options null_glob
+
+  local dest_dir="$1"
+  local extension="$2"
+  local label="$3"
+
+  mkdir -p "$dest_dir"
+
+  local linked=()
+  local rule_file rule_name target
+  for rule_file in "$RULES_SRC"/*.md; do
+    rule_name="$(basename "$rule_file" .md)"
+    target="$dest_dir/$rule_name.$extension"
+    if [ -L "$target" ] || [ ! -e "$target" ]; then
+      ln -snf "$rule_file" "$target"
+      linked+=("$rule_name")
+    fi
+  done
+
+  local pruned=()
+  local link_dest
+  for target in "$dest_dir"/*; do
+    [ -L "$target" ] || continue
+    link_dest="$(readlink "$target")"
+    case "$link_dest" in
+      "$RULES_SRC"/*)
+        if [ ! -f "$link_dest" ]; then
+          rm -f "$target"
+          pruned+=("$(basename "$target")")
+        fi
+        ;;
+    esac
+  done
+
+  print_link_summary "$label" "$dest_dir" "rules" "${linked[*]}" "${pruned[*]}"
 }
 
 echo "(X) To me, my X-Men! Prof-X ready."
@@ -103,8 +146,10 @@ if [ "$(basename "$SKILLS_DIR")" = "skills" ]; then
 else
   echo "  Claude Code skills: skipped — not inside .claude/skills/"
 fi
+link_rules_into "$HOME/.claude/rules" "md" "Claude Code rules"
 
 # Register with Cursor's global personal skills directory.
 link_skills_into "$HOME/.cursor/skills" "Cursor skills"
+link_rules_into "$HOME/.cursor/rules" "mdc" "Cursor rules"
 
 install_pr_review_toolkit

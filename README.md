@@ -5,7 +5,8 @@ _© Marvel Characters, Inc. / Marvel Comics. All rights reserved._
 
 **Prof-X is an opinionated setup of Claude Code to assist in my day-to-day AI coding assistant needs, both personally and professionally.**
 
-Included here are skills for plan review, code review, and engineering retrospectives.
+Included here are skills for plan review, code review, engineering retrospectives, and rules for
+consistent agent behavior.
 
 ### Included skills
 
@@ -27,6 +28,13 @@ Included here are skills for plan review, code review, and engineering retrospec
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
 | `/verify-this`     | Skeptical verifier      | Prove or disprove a claim with baseline vs. treatment evidence. Returns VERIFIED / NOT VERIFIED / INCONCLUSIVE |
 | `/testing-gaps`    | QA lead                 | Find the behaviors a change leaves untested, ranked by blast radius, each with a concrete test case |
+| `/use-conversational-language` | Copy editor | Write human-facing text in a concise, natural voice without changing what it says |
+
+### Included rules
+
+| Rule | What it does |
+| ---- | ------------ |
+| `no-nonsense-comments` | Short, durable comments that make sense without session context. Uses `/use-conversational-language` for any it writes |
 
 ## Who is this for
 
@@ -34,17 +42,18 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /pr-review-interactive, /pr-feedback, /ship, /retro, /browse, /verify-this, /testing-gaps.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /investigate, /pr-review, /pr-review-canvas, /pr-review-interactive, /pr-feedback, /ship, /retro, /browse, /verify-this, /testing-gaps, /use-conversational-language.
 
 ### What gets installed
 
 - Skill files (Markdown prompts) in `~/.claude/skills/prof-x/skills/` (or `.claude/skills/prof-x/skills/` for project installs)
 - `setup` symlinks every skill directory up into the Claude Code skills dir (e.g. `~/.claude/skills/review` → `prof-x/skills/review`) so each `/skill` is discoverable
 - `setup` also symlinks every skill into Cursor's personal skills dir (`~/.cursor/skills/review` → `prof-x/skills/review`), so the same skills are available in Cursor (the dir is created if missing)
+- Rule files in `~/.claude/skills/prof-x/rules/`; `setup` links them as always-on personal rules in Claude Code (`~/.claude/rules/*.md`) and Cursor (`~/.cursor/rules/*.mdc`)
 - `setup` also installs the `pr-review-toolkit` plugin (idempotent — skipped if already present; see [Requirements](#requirements))
 - `/retro` saves JSON snapshots to `.context/retros/` in your project for trend tracking
 
-Everything lives inside `.claude/`. Nothing touches your PATH or runs in the background.
+Everything lives inside `.claude/` and `.cursor/`. Nothing touches your PATH or runs in the background.
 
 ### Requirements
 

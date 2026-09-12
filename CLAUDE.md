@@ -20,9 +20,11 @@ prof-x/
 │   ├── retro/            # /retro (engineering retrospective)
 │   ├── browse/           # /browse (Playwright-cli QA / dogfooding browser)
 │   ├── verify-this/      # /verify-this (prove or disprove a claim with baseline/treatment evidence)
-│   └── testing-gaps/     # /testing-gaps (find untested behaviors in a diff, ranked, with test cases)
-├── rules/            # (planned) always-on agent rules — not shipped yet
-├── setup             # registers skills (Claude Code + Cursor) via symlinks + installs pr-review-toolkit
+│   ├── testing-gaps/     # /testing-gaps (find untested behaviors in a diff, ranked, with test cases)
+│   └── use-conversational-language/ # /use-conversational-language (natural voice for human-facing text)
+├── rules/            # always-on agent rules
+│   └── no-nonsense-comments.md # durable, context-free code comments
+├── setup             # registers skills and rules (Claude Code + Cursor) + installs pr-review-toolkit
 ├── README.md
 ├── CHANGELOG.md
 ├── VERSION           # 3-digit semver, bumped by /ship
@@ -40,12 +42,13 @@ The active install lives at `~/.claude/skills/prof-x/`, and `setup` symlinks eac
 skill directory up into `~/.claude/skills/` (e.g. `~/.claude/skills/review` →
 `prof-x/skills/review`) so each `/skill` is discoverable. It also symlinks each skill into
 Cursor's personal skills dir at `~/.cursor/skills/` (e.g. `~/.cursor/skills/review` →
-`prof-x/skills/review`; created if missing) so the same skills work in Cursor. Because the
-skills are symlinks into the clone, pulling latest is all that's needed — no rebuild.
+`prof-x/skills/review`; created if missing) so the same skills work in Cursor. Rules are
+symlinked into `~/.claude/rules/` (`.md`) and `~/.cursor/rules/` (`.mdc`).
+Because the installed links point into the clone, pulling latest is all that's needed — no rebuild.
 
 After making changes:
 
 1. Push your branch (or merge to `main`).
 2. Update the clone: `cd ~/.claude/skills/prof-x && git fetch origin && git reset --hard origin/main`
-3. Re-run `./setup` only if you added a **new** skill directory (to create its symlink)
+3. Re-run `./setup` only if you added a **new** skill or rule (to create its symlink)
    or need to (re)install the `pr-review-toolkit` plugin.
