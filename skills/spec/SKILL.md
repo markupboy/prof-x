@@ -192,8 +192,8 @@ Capture the Linear key (or empty if not filed) — it goes in the archive frontm
 
 #### Archive the spec (always, local)
 
-Write the spec to `.context/specs/` in the repo (consistent with `/retro`'s
-`.context/retros/`). Use the `Write` tool. First gather two values:
+Write the spec to `.context/specs/` in the repo. Use the `Write` tool. First
+gather two values:
 
 ```bash
 git branch --show-current 2>/dev/null || echo unknown
@@ -445,9 +445,7 @@ Add these sections after `Current behavior (research)`:
   "is this worth building" bar.
 - **After `/spec`:** if the spec carries architectural or design risk that needs
   review before implementation starts, suggest `/plan-eng-review`.
-- **For implementation:** `/implement` is the handoff. It fetches the Linear
-  issue and executes it without re-asking the user for the spec.
-- **The `/spec` → `/implement` → `/ship` loop:** `/implement` branches as
-  `SCR-NNN-…` so Linear auto-links the branch to the ticket; `/pr-review` reads the
-  ticket's acceptance criteria and scores the PR against them; the eventual PR can
-  include `Closes SCR-NNN` so merging closes the ticket.
+- **The `/spec` → `/ship` loop:** name the branch `SCR-NNN-…` so Linear
+  auto-links it to the ticket; `/pr-review` reads the ticket's acceptance
+  criteria and scores the PR against them; the eventual PR can include
+  `Closes SCR-NNN` so merging closes the ticket.
