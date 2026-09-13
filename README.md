@@ -33,6 +33,7 @@ consistent agent behavior.
 | `/testing-gaps`    | QA lead                 | Find the behaviors a change leaves untested, ranked by blast radius, each with a concrete test case |
 | `/create-manual-test-instructions` | QA | Turn a ticket or REQUIREMENTS into a concise `.MANUAL-TEST.md` a non-author can follow |
 | `/memory-doctor`   | Housekeeping            | Drain project agent-memory: relocate each block into a user-controlled home or archive it |
+| `/context-checkup` | Housekeeping            | Measure what auto-loads into session context and rank reversible trims by tokens saved |
 | `/use-conversational-language` | Copy editor | Write human-facing text in a concise, natural voice without changing what it says |
 
 ### Included rules
@@ -51,7 +52,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /fetch-pr-review, /refine-pr-review, /pr-feedback, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /fetch-pr-review, /refine-pr-review, /pr-feedback, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
 
 ### What gets installed
 

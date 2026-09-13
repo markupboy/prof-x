@@ -26,6 +26,7 @@ prof-x/
 │   ├── testing-gaps/     # /testing-gaps (find untested behaviors in a diff, ranked, with test cases)
 │   ├── create-manual-test-instructions/ # /create-manual-test-instructions (ticket → .MANUAL-TEST.md)
 │   ├── memory-doctor/    # /memory-doctor (drain/relocate project agent-memory)
+│   ├── context-checkup/  # /context-checkup (audit auto-loaded startup context → ranked trims)
 │   └── use-conversational-language/ # /use-conversational-language (natural voice for human-facing text)
 ├── rules/            # always-on agent rules
 │   ├── git-read-only-by-default.md # require explicit approval for Git writes

@@ -20,6 +20,8 @@
   report proving it.
 - `/memory-doctor` skill: drain project agent-memory, relocating each block into a
   user-controlled home or archiving it.
+- `/context-checkup` skill: measure what auto-loads into a session's context and
+  recommend reversible trims ranked by tokens saved. Slash-only.
 - `/fetch-pr-review` skill: capture every comment on a PR URL into a self-contained
   `.PR-REVIEW.md` in the task's planning directory. Fetch only — no triage or replies.
 - `/refine-pr-review` skill: triage a fetched PR-REVIEW file with the user, draft
