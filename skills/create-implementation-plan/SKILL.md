@@ -144,8 +144,7 @@ something is a decision or a mechanical detail, put it in.
 
 State clearly when done that the plan file is ready, referring to it by its **project-relative
 path** (relative to the current working directory — never absolute). Then tell the user to start a
-**fresh execution session** with a clean context that reads **only the plan file**, implements it,
-then runs the project's validation (lint, tests, build).
+**fresh execution session** that runs `/execute-plan` on **only the plan file**.
 
 End with a **single copy-pasteable launch command** — session name and prompt combined, so one
 paste starts the execution session. Use the launch syntax of the agent tool in use
@@ -154,7 +153,7 @@ where `<slug>` is the plan filename's slug (without id prefix or extension), so 
 recognizable in the session list, e.g.:
 
 ```
-claude --name execute-plan-report-approval "Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
+claude --name execute-plan-report-approval "/execute-plan .agents/plans/123-report-approval/123-report-approval.PLAN.md"
 ```
 
 Then offer the alternative — clearing the current session instead (vendor-agnostic — `/clear` below
@@ -163,5 +162,5 @@ is only the example; use the clear command of the agent tool in use):
 OR /clear and run:
 
 ```
-Execute the plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
+/execute-plan .agents/plans/123-report-approval/123-report-approval.PLAN.md
 ```

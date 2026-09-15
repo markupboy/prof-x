@@ -4,6 +4,11 @@
 
 ### Added
 
+- `/implement` skill: thin orchestrator that runs fetch → review-ticket → refine-ticket
+  → create-implementation-plan as isolated subagents (fresh context each hop), pauses
+  for plan approval, then launches `/execute-plan`.
+- `/execute-plan` skill: implement a `.PLAN.md` in a clean session — plan file only,
+  then the project's validation. No commit/PR unless asked.
 - `/fetch-ticket` skill: fetch tracker tickets into self-contained `.TICKET.md` files.
   Fetch only — no analysis or planning.
 - `/review-ticket` skill: pre-pickup triage of a ticket or set against the codebase,
@@ -37,8 +42,8 @@
 
 ### Removed
 
-- Unused skills: `/implement`, `/investigate`, `/pr-review-canvas`,
-  `/pr-review-interactive`, `/retro`, `/verify-this`.
+- Unused skills: `/investigate`, `/pr-review-canvas`, `/pr-review-interactive`,
+  `/retro`, `/verify-this`.
 
 ### Changed
 

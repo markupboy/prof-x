@@ -10,6 +10,8 @@ prof-x/
 │   ├── review-ticket/    # /review-ticket (pre-pickup triage → .TICKET-REVIEW.md)
 │   ├── refine-ticket/    # /refine-ticket (ticket/idea → verified REQUIREMENTS)
 │   ├── create-implementation-plan/ # /create-implementation-plan (REQUIREMENTS → PLAN.md)
+│   ├── execute-plan/     # /execute-plan (PLAN.md → implement + validate)
+│   ├── implement/        # /implement (isolated fetch → review → refine → plan → execute)
 │   ├── start-vibing/     # /start-vibing (idea → running app) + stack-app.md, stack-service.md
 │   ├── plan-prod-review/ # /plan-prod-review (CPO / staff PM plan review)
 │   ├── plan-eng-review/  # /plan-eng-review (eng manager / tech lead plan review)

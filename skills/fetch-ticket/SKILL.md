@@ -166,3 +166,6 @@ OR /clear and run:
 ```
 /refine-ticket <output-dir>/<id>-<slug>.TICKET.md
 ```
+
+To run review → refine → plan → execute as isolated hops instead, `/implement` on the ticket URL
+or this `.TICKET.md`.
