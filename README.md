@@ -25,6 +25,7 @@ consistent agent behavior.
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
 | `/review-code-assistant` | Pair reviewer     | Local read-only review of a branch/PR diff; suggest pasteable comments, never post     |
+| `/review-renovate` | Dep-bump reviewer | Renovate PR/branch that didn't automerge: breaking changes, test-blind regressions, merge verdict |
 | `/fetch-pr-review` | Review secretary        | Capture every comment on a PR URL into a self-contained `.PR-REVIEW.md`; fetch only, no triage or replies |
 | `/refine-pr-review` | Author's advocate      | Triage a fetched PR-REVIEW file with the user, draft replies, and write REQUIREMENTS for accepted changes |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
@@ -54,7 +55,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /fetch-pr-review, /refine-pr-review, /pr-feedback, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /review-renovate, /fetch-pr-review, /refine-pr-review, /pr-feedback, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
 
 ### What gets installed
 
@@ -80,7 +81,7 @@ Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea
 - Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
 - First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
 
-`/fetch-ticket`, `/fetch-pr-review`, and `/review-code-assistant` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR.
+`/fetch-ticket`, `/fetch-pr-review`, `/review-code-assistant`, and `/review-renovate` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`, `/review-renovate`). `/refine-pr-review` is file-in/file-out: it never posts to the PR.
 
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 

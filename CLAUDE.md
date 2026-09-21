@@ -18,6 +18,7 @@ prof-x/
 │   ├── review/           # /review + checklist.md (pre-landing review)
 │   ├── pr-review/        # /pr-review (saves to file; wraps pr-review-toolkit)
 │   ├── review-code-assistant/ # /review-code-assistant (local read-only review comments)
+│   ├── review-renovate/  # /review-renovate (Renovate bump → CLEAR/CAUTION/BLOCK)
 │   ├── fetch-pr-review/  # /fetch-pr-review (capture PR comments → .PR-REVIEW.md)
 │   ├── refine-pr-review/ # /refine-pr-review (triage a fetched PR-REVIEW → replies + REQUIREMENTS)
 │   ├── pr-feedback/      # /pr-feedback (validate a PR review thread → proceed / clarify / push back)

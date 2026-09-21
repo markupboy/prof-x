@@ -4,6 +4,9 @@
 
 ### Added
 
+- `/review-renovate` skill: inspect a Renovate dependency-bump PR or branch
+  that did not automerge — breaking changes, test-blind regressions, PR/CI
+  hygiene — and print a CLEAR / CAUTION / BLOCK verdict. Session report only.
 - `/implement` skill: thin orchestrator that runs fetch → review-ticket → refine-ticket
   → create-implementation-plan as isolated subagents (fresh context each hop), pauses
   for plan approval, then launches `/execute-plan`.
