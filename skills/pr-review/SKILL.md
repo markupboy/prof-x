@@ -187,6 +187,12 @@ Suggested fix - optional remediation guidance.
 // optional code block illustrating the fix
 ```
 
+**Suggested Comment:**
+
+```
+Can we reuse `existingHelper` here instead of the new copy?
+```
+
 ---
 ````
 
@@ -199,6 +205,7 @@ Formatting rules:
 - `Status:` values are UPPERCASE: `OPEN`, `DISMISSED`, `FIXED`.
 - `**Details:**` introduces the body of the finding; leave a blank line after it before the prose.
 - `Suggested Fix -` is optional — include it when there is concrete remediation guidance, otherwise omit.
+- `**Suggested Comment:**` is the review comment to paste at the `Comment On:` location, written in a real reviewer's voice for the PR author. Before writing any Suggested Comment, actually invoke **/use-conversational-language** (Developer conversations, reviewer comments) and follow it — reciting its rules from memory does not count. Give it as a fenced block holding exactly what gets pasted, never a blockquote (`>` prefixes travel with the copy); when the comment itself holds a fence, make the outer one longer, never indent or escape the inner fence. Wrap identifiers in backticks. The comment is the ask, not a restatement of `Details:` — the diagnosis and evidence stay in the body; brevity and softness are tone, never a lower evidence bar. Include it for every `OPEN` issue; omit it for `DISMISSED` and `FIXED` entries.
 
 Status rules:
 
