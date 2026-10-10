@@ -22,6 +22,7 @@ prof-x/
 │   ├── fetch-pr-review/  # /fetch-pr-review (capture PR comments → .PR-REVIEW.md)
 │   ├── refine-pr-review/ # /refine-pr-review (triage a fetched PR-REVIEW → replies + REQUIREMENTS)
 │   ├── pr-feedback/      # /pr-feedback (validate a PR review thread → proceed / clarify / push back)
+│   ├── dependency-bumps/ # /dependency-bumps (triage Renovate/Dependabot PRs → merge the safe ones in sequence)
 │   ├── handover/         # /handover (package a finished change for review)
 │   ├── self-review/      # /self-review (author-side merge-ready review + report)
 │   ├── ship/             # /ship (release workflow)

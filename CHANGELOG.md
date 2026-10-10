@@ -4,6 +4,9 @@
 
 ### Added
 
+- `/dependency-bumps` skill: triage open Renovate / Dependabot PRs with one analyst per
+  PR, report why each is or isn't safe, then merge the safe ones in sequence, each updated
+  onto the latest base and green on required CI.
 - `/review-renovate` skill: review all open Renovate dependency PRs (or a named
   subset) with one isolated subagent per PR — breaking changes, test-blind
   regressions, PR/CI hygiene — and a CLEAR / CAUTION / BLOCK verdict each.

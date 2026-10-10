@@ -29,6 +29,7 @@ consistent agent behavior.
 | `/fetch-pr-review` | Review secretary        | Capture every comment on a PR URL into a self-contained `.PR-REVIEW.md`; fetch only, no triage or replies |
 | `/refine-pr-review` | Author's advocate      | Triage a fetched PR-REVIEW file with the user, draft replies, and write REQUIREMENTS for accepted changes |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
+| `/dependency-bumps` | Dependency steward     | Triage open Renovate / Dependabot PRs against how the repo uses each dependency, then merge the safe ones in sequence on green CI |
 | `/handover`        | Author                  | Package a finished change as a reviewer-facing PR description / handover doc           |
 | `/self-review`     | Author as maintainer    | Review your own changeset until merge-ready and write a compact report proving it      |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
@@ -55,7 +56,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /review-renovate, /fetch-pr-review, /refine-pr-review, /pr-feedback, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /review-renovate, /fetch-pr-review, /refine-pr-review, /pr-feedback, /dependency-bumps, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
 
 ### What gets installed
 
@@ -86,6 +87,8 @@ Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 
 - **`gh` (required).** The feedback thread and PR context come from `gh api` (REST + GraphQL) — there is no Gitea path. Clarifying questions and push-back drafts are produced in the session for the author to post themselves; the skill never replies to a thread on its own initiative, but it may post a user-confirmed reply when explicitly asked. Resolving threads or any other mutation stays off-limits.
+
+`/dependency-bumps` picks `gh` or `tea` from the current repo's `origin` remote and stops without it. It is read-only until you choose which PRs to merge; then it updates each branch on the forge, waits for required CI, and squash-merges, one PR at a time. It never force-pushes, bypasses checks, or merges a PR it did not judge safe.
 
 `/pr-review` has two extra dependencies:
 
