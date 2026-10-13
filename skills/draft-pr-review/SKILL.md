@@ -80,18 +80,18 @@ don't sign off. Stay grounded in the findings; no praise or opinions the review 
 - If the PR author is the current `gh` user, GitHub does not allow Approve or Request Changes on
   your own PR. Suggest Comment and say why.
 
-The verdict is advice to the user. Never encode it in the review (see step 5).
+The verdict is advice to the user. Never encode it in the review (see step 5 and the report).
 
 **Approve case:** approvals are submitted with an empty body. Leave the pending review's `body`
-empty and show the summary as separate text for the user to post as a standalone comment.
+empty and show the summary as separate text in the report for the user to post as a standalone comment.
 
-## 5. Confirm, then post
+## 5. Post the pending review
 
-Show the complete batch: each `path:line` with its exact body, the summary, and the suggested
-verdict with its reason. Get one explicit go-ahead on that wording. A go-ahead covers only the
-text shown; any edit needs a new one.
+Invoking this skill is the go-ahead to create the pending review; don't ask for confirmation first.
+The review stays private to the user until they submit it, and they can edit or delete any comment
+in the GitHub UI.
 
-Then create the pending review in a single call. Build the payload as JSON (a temp file or `jq`,
+Create the pending review in a single call. Build the payload as JSON (a temp file or `jq`,
 so quotes and fences in bodies survive) and **omit `event`**:
 
 ```bash
@@ -122,7 +122,12 @@ After creating it, verify: `gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews/
 
 Short and plain:
 
-- The review is pending and not submitted, with the PR link (`<url>/files`, where it can be edited).
+- The review is pending and not submitted. Lead with the link to the PR's changes view, where the
+  pending review can be edited and submitted:
+  `https://github.com/$OWNER/$REPO/pull/$PR_NUMBER/changes`
+  (e.g. `https://github.com/screensteps/ai-proxy-api/pull/173/changes`).
+- The posted comments (each `path:line` with its body) and the summary, so the user can see what
+  was drafted without opening GitHub.
 - Number of inline comments posted, and any findings folded into the summary or skipped.
 - The suggested verdict and reason. The user picks the verdict and submits in the GitHub UI.
 - In the Approve case, the summary text to post separately.
@@ -132,5 +137,5 @@ Short and plain:
 - Never submit, approve, request changes, resolve, reply to, edit, or delete anything on the PR.
   The only write is creating one pending review (plus file-level or add-to-pending threads the
   user approved in step 3).
-- Never post text the user hasn't approved in step 5.
+- Never put the verdict in the review; only suggest it in the report.
 - No checkout, no working-tree changes, no files written beyond the temp payload.
