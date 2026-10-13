@@ -11,18 +11,47 @@ SKILLS_DIR="$(dirname "$PROFX_DIR")"
 SKILLS_SRC="$PROFX_DIR/skills"
 RULES_SRC="$PROFX_DIR/rules"
 
-print_link_summary() {
-  local label="$1" dest_dir="$2" kind="$3" linked_list="$4" pruned_list="$5"
+# Bold/dim only when stdout is a terminal.
+if [ -t 1 ]; then
+  BOLD=$'\e[1m'; DIM=$'\e[2m'; GREEN=$'\e[32m'; YELLOW=$'\e[33m'; RED=$'\e[31m'; RESET=$'\e[0m'
+else
+  BOLD=""; DIM=""; GREEN=""; YELLOW=""; RED=""; RESET=""
+fi
 
-  echo "  $label ($dest_dir):"
-  if [ -n "$linked_list" ]; then
-    echo "    linked $kind: $linked_list"
+# Create or refresh a symlink and echo what happened: new | updated | unchanged | skipped.
+# A real file or directory at $target is never touched.
+place_link() {
+  local src="$1" target="$2"
+  if [ -L "$target" ]; then
+    if [ "$(readlink "$target")" = "$src" ]; then
+      echo "unchanged"
+    else
+      ln -snf "$src" "$target"
+      echo "updated"
+    fi
+  elif [ -e "$target" ]; then
+    echo "skipped"
   else
-    echo "    linked $kind: (already up to date)"
+    ln -snf "$src" "$target"
+    echo "new"
   fi
-  if [ -n "$pruned_list" ]; then
-    echo "    pruned stale $kind: $pruned_list"
-  fi
+}
+
+# Args: label, dest_dir, kind, then space-separated lists: new, updated, unchanged,
+# skipped, pruned.
+print_link_summary() {
+  local label="$1" dest_dir="$2" kind="$3"
+  local new_list="$4" updated_list="$5" unchanged_list="$6" skipped_list="$7" pruned_list="$8"
+  local unchanged_count
+  unchanged_count=$(print -r -- "$unchanged_list" | wc -w | tr -d ' ')
+
+  echo "${BOLD}$label${RESET} ${DIM}${dest_dir/#$HOME/~}${RESET}"
+  [ -n "$new_list" ]     && echo "  ${GREEN}+ new${RESET}        $new_list"
+  [ -n "$updated_list" ] && echo "  ${YELLOW}~ relinked${RESET}   $updated_list"
+  [ -n "$pruned_list" ]  && echo "  ${YELLOW}- pruned${RESET}     $pruned_list"
+  [ -n "$skipped_list" ] && echo "  ${RED}! skipped${RESET}    $skipped_list ${DIM}(real file/dir in the way)${RESET}"
+  echo "  ${DIM}= $unchanged_count $kind unchanged${RESET}"
+  echo
 }
 
 # /pr-review wraps the pr-review-toolkit plugin. Install it if it's missing.
@@ -31,21 +60,21 @@ install_pr_review_toolkit() {
   local plugin="pr-review-toolkit@claude-plugins-official"
 
   if ! command -v claude >/dev/null 2>&1; then
-    echo "  pr-review-toolkit: skipped — 'claude' CLI not on PATH."
+    echo "${BOLD}pr-review-toolkit${RESET}\n  ${YELLOW}! skipped${RESET}    'claude' CLI not on PATH."
     echo "    install manually: claude plugin install $plugin"
     return 0
   fi
 
   if claude plugin list --json 2>/dev/null | grep -q '"id": *"pr-review-toolkit@'; then
-    echo "  pr-review-toolkit: already installed."
+    echo "${BOLD}pr-review-toolkit${RESET} ${DIM}plugin${RESET}\n  ${DIM}= already installed${RESET}"
     return 0
   fi
 
-  echo "  pr-review-toolkit: installing ($plugin)…"
+  echo "${BOLD}pr-review-toolkit${RESET} ${DIM}plugin${RESET}\n  installing $plugin…"
   if claude plugin install "$plugin" --scope user >/dev/null 2>&1; then
-    echo "  pr-review-toolkit: installed."
+    echo "  ${GREEN}+ installed${RESET}"
   else
-    echo "  pr-review-toolkit: install failed — install it manually:"
+    echo "  ${RED}! install failed${RESET} — install it manually:"
     echo "    claude plugin install $plugin"
     echo "    (if the marketplace is unknown: claude plugin marketplace add anthropics/claude-plugins-public)"
   fi
@@ -63,19 +92,21 @@ link_skills_into() {
 
   mkdir -p "$dest_dir"
 
-  local linked=()
-  local skill_dir skill_name target
+  local new=() updated=() unchanged=() skipped=()
+  local skill_dir skill_name target outcome
   for skill_dir in "$SKILLS_SRC"/*/; do
     if [ -f "$skill_dir/SKILL.md" ]; then
       skill_name="$(basename "$skill_dir")"
       # Skip node_modules
       [ "$skill_name" = "node_modules" ] && continue
       target="$dest_dir/$skill_name"
-      # Create or update symlink; skip if a real file/directory exists
-      if [ -L "$target" ] || [ ! -e "$target" ]; then
-        ln -snf "$SKILLS_SRC/$skill_name" "$target"
-        linked+=("$skill_name")
-      fi
+      outcome="$(place_link "$SKILLS_SRC/$skill_name" "$target")"
+      case "$outcome" in
+        new) new+=("$skill_name") ;;
+        updated) updated+=("$skill_name") ;;
+        unchanged) unchanged+=("$skill_name") ;;
+        skipped) skipped+=("$skill_name") ;;
+      esac
     fi
   done
 
@@ -97,7 +128,7 @@ link_skills_into() {
     esac
   done
 
-  print_link_summary "$label" "$dest_dir" "skills" "${linked[*]}" "${pruned[*]}"
+  print_link_summary "$label" "$dest_dir" "skills" "${new[*]}" "${updated[*]}" "${unchanged[*]}" "${skipped[*]}" "${pruned[*]}"
 }
 
 link_rules_into() {
@@ -109,15 +140,18 @@ link_rules_into() {
 
   mkdir -p "$dest_dir"
 
-  local linked=()
-  local rule_file rule_name target
+  local new=() updated=() unchanged=() skipped=()
+  local rule_file rule_name target outcome
   for rule_file in "$RULES_SRC"/*.md; do
     rule_name="$(basename "$rule_file" .md)"
     target="$dest_dir/$rule_name.$extension"
-    if [ -L "$target" ] || [ ! -e "$target" ]; then
-      ln -snf "$rule_file" "$target"
-      linked+=("$rule_name")
-    fi
+    outcome="$(place_link "$rule_file" "$target")"
+    case "$outcome" in
+        new) new+=("$rule_name") ;;
+        updated) updated+=("$rule_name") ;;
+        unchanged) unchanged+=("$rule_name") ;;
+        skipped) skipped+=("$rule_name") ;;
+      esac
   done
 
   local pruned=()
@@ -135,7 +169,7 @@ link_rules_into() {
     esac
   done
 
-  print_link_summary "$label" "$dest_dir" "rules" "${linked[*]}" "${pruned[*]}"
+  print_link_summary "$label" "$dest_dir" "rules" "${new[*]}" "${updated[*]}" "${unchanged[*]}" "${skipped[*]}" "${pruned[*]}"
 }
 
 echo "(X) To me, my X-Men! Prof-X ready."
@@ -144,7 +178,7 @@ echo "(X) To me, my X-Men! Prof-X ready."
 if [ "$(basename "$SKILLS_DIR")" = "skills" ]; then
   link_skills_into "$SKILLS_DIR" "Claude Code skills"
 else
-  echo "  Claude Code skills: skipped — not inside .claude/skills/"
+  echo "${BOLD}Claude Code skills${RESET}\n  ${YELLOW}! skipped${RESET}    not inside .claude/skills/\n"
 fi
 link_rules_into "$HOME/.claude/rules" "md" "Claude Code rules"
 
