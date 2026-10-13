@@ -4,6 +4,8 @@
 
 ### Added
 
+- `/draft-pr-review` skill: turn `/review-code-assistant` output into a pending (unsubmitted)
+  GitHub review with inline comments, a conversational summary, and a suggested verdict.
 - `/dependency-bumps` skill: triage open Renovate / Dependabot PRs with one analyst per
   PR, report why each is or isn't safe, then merge the safe ones in sequence, each updated
   onto the latest base and green on required CI.

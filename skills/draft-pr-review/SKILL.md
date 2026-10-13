@@ -1,0 +1,136 @@
+---
+name: draft-pr-review
+version: 1.0.0
+description: |
+  Take the output of /review-code-assistant and create a pending (draft) GitHub
+  review on the PR: every comment attached to its line, a short summary as the
+  review body, and a suggested verdict (Approve, Comment, Request Changes). Never
+  submits the review. Use when asked to "post this as a draft review", "draft
+  these comments on the PR", "put the review on GitHub as pending", or
+  "/draft-pr-review".
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - AskUserQuestion
+---
+
+# Draft PR review
+
+The opt-in publish step after `/review-code-assistant`. That skill is read-only and outputs local
+text; this one turns its findings into a **pending** GitHub review the user can edit and submit in
+the web UI. The only write is creating that one pending review. Never submit it.
+
+GitHub only (`github.com`, via **`gh`**; do not use a GitHub MCP). For any other host, stop and say
+this skill is GitHub-only. If `gh` is not on PATH or not authenticated, stop and say so.
+
+## 1. Gather input
+
+Take the review from, in order: the `/review-code-assistant` output already in the conversation, a
+pasted block, or a file path the user gives. If none exists, tell the user to run
+`/review-code-assistant` first.
+
+Also needed: the PR URL (from the review run, else ask) and the ref or SHA the review was run
+against (usually stated in the review). Extract `OWNER`, `REPO`, `PR_NUMBER`.
+
+## 2. Parse the findings
+
+Each finding is a `### N · path:line` heading (a range `path:10-14` is possible), an explanation,
+and an optional **Suggested comment** in a fenced block.
+
+- The fenced Suggested comment is the comment body. Post it **verbatim**.
+- A finding with only an explanation (no Suggested comment) needs a body. Draft one in a
+  reviewer's voice: actually invoke **/use-conversational-language** and follow it; reciting its
+  rules from memory does not count. The explanation is a note to the user, never paste it as is.
+- `Looks good, no comments.` means an empty comment list. Skip to step 4.
+- Keep the review's order (diff order).
+
+## 3. Validate against the PR (read-only)
+
+1. `gh pr view "$PR_NUMBER" --repo "$OWNER/$REPO" --json state,isDraft,author,headRefOid,url`.
+   Stop if the PR is closed or merged. Record `HEAD_SHA`.
+2. If the reviewed SHA is known and differs from `HEAD_SHA`, warn that the PR moved and line
+   numbers may have drifted. Let the user choose: re-run the review, or continue.
+3. Fetch the patches: `gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/files" --paginate`. For each
+   finding, confirm `path` is in the PR and the line is a new-side (`RIGHT`) line inside a diff hunk
+   (added or context line). GitHub rejects the **whole** request if any one comment is off-diff,
+   so check before posting.
+4. Off-diff or unmappable findings: never drop silently. Ask the user per finding (batch into one
+   `AskUserQuestion`): fold it into the summary body, post it as a file-level comment (only when
+   the file is in the PR; add it after step 6 via GraphQL `addPullRequestReviewThread` with
+   `subjectType: FILE` on the pending review), or skip.
+5. Existing pending review: `gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" --paginate` and
+   look for `state == "PENDING"` owned by the current user (`gh api user -q .login`). GitHub allows
+   one per user per PR. If there is one, stop and ask: add the comments to it (GraphQL
+   `addPullRequestReviewThread` with its `pullRequestReviewId`), or let the user submit or discard
+   it first. Never delete or dismiss a review.
+
+## 4. Write the summary and suggest a verdict
+
+**Summary** (the review body): invoke **/use-conversational-language** first. One or two plain
+sentences: what the PR does and the overall take. Don't list the findings (they are inline) and
+don't sign off. Stay grounded in the findings; no praise or opinions the review didn't support.
+
+**Suggested verdict**, one of Approve / Comment / Request Changes, with a one-line reason:
+
+- **Request Changes**: any finding that names a demonstrable bug or a documented-rule breach.
+- **Comment**: only nits, simplifications, or questions.
+- **Approve**: no findings.
+- If the PR author is the current `gh` user, GitHub does not allow Approve or Request Changes on
+  your own PR. Suggest Comment and say why.
+
+The verdict is advice to the user. Never encode it in the review (see step 5).
+
+**Approve case:** approvals are submitted with an empty body. Leave the pending review's `body`
+empty and show the summary as separate text for the user to post as a standalone comment.
+
+## 5. Confirm, then post
+
+Show the complete batch: each `path:line` with its exact body, the summary, and the suggested
+verdict with its reason. Get one explicit go-ahead on that wording. A go-ahead covers only the
+text shown; any edit needs a new one.
+
+Then create the pending review in a single call. Build the payload as JSON (a temp file or `jq`,
+so quotes and fences in bodies survive) and **omit `event`**:
+
+```bash
+gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" --input "$PAYLOAD"
+```
+
+```json
+{
+  "commit_id": "<HEAD_SHA>",
+  "body": "<summary, or empty for the Approve case>",
+  "comments": [
+    { "path": "src/foo.ts", "line": 42, "side": "RIGHT", "body": "..." },
+    { "path": "src/bar.ts", "start_line": 10, "start_side": "RIGHT", "line": 14, "side": "RIGHT", "body": "..." }
+  ]
+}
+```
+
+Omitting `event` is what leaves the review `PENDING`. Never send `event`, never call the submit
+endpoint (`.../reviews/{id}/events`), and never use an MCP tool that submits. Delete the temp
+payload afterward. If the call fails (typically 422), show the error, fix the offending comment,
+and retry; do not fall back to posting comments individually, since single comments publish
+immediately.
+
+After creating it, verify: `gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews/$REVIEW_ID"` shows
+`state: "PENDING"`.
+
+## 6. Report
+
+Short and plain:
+
+- The review is pending and not submitted, with the PR link (`<url>/files`, where it can be edited).
+- Number of inline comments posted, and any findings folded into the summary or skipped.
+- The suggested verdict and reason. The user picks the verdict and submits in the GitHub UI.
+- In the Approve case, the summary text to post separately.
+
+## Boundaries
+
+- Never submit, approve, request changes, resolve, reply to, edit, or delete anything on the PR.
+  The only write is creating one pending review (plus file-level or add-to-pending threads the
+  user approved in step 3).
+- Never post text the user hasn't approved in step 5.
+- No checkout, no working-tree changes, no files written beyond the temp payload.
