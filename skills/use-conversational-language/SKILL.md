@@ -66,7 +66,7 @@ backticks where they render (e.g. GitHub PR comments), never where they'd show l
 - Point by similarity ("This is similar to `X`."), not verdicts ("basically a copy of").
 - Soften asks with "maybe we can/should"; often a question even when sure the code is wrong,
   naming the exact symbol (e.g. "Where is `FOO` used?").
-- Flagging an uncertain risk: lead with a soft "Just wondering: …?" question, then the non-obvious
+- Flagging an uncertain risk: lead with a soft question ("…?"), then the non-obvious
   mechanism that makes it real and what it'd cause. Leave the fix to the author.
 - Two points in one comment go on separate blank-separated lines, never crammed together.
 - Point at the change; don't spell out the full replacement, or evidence the author can trace from

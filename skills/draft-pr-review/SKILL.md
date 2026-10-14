@@ -4,7 +4,7 @@ version: 1.0.0
 description: |
   Take the output of /review-code-assistant, or a saved /pr-review file
   (pr_reviews/review_<PR>[_vN].md), and create a pending (draft) GitHub review on
-  the PR: every comment attached to its line, a short summary as the review body,
+  the PR: every comment attached to its line, a short summary of the findings as the review body,
   and a suggested verdict (Approve, Comment, Request Changes). Never submits the
   review. Use when asked to "post this as a draft review", "draft these comments
   on the PR", "put the review on GitHub as pending", "draft my saved PR review",
@@ -111,10 +111,12 @@ Each finding is a `## [#N] **Title**` block with `**Severity:**`, `**Status:**`,
 
 ## 4. Write the summary and suggest a verdict
 
-**Summary** (the review body): invoke **/use-conversational-language** first. One or two plain
-sentences: what the PR does and the overall take. Don't list the findings (they are inline) and
-don't sign off. Stay grounded in the findings; no praise or opinions the review didn't support.
-From a `/pr-review` file, its `## Description` section can inform what the PR does.
+**Summary** (the review body, shown in the PR's main comment section): invoke
+**/use-conversational-language** first. One to three plain sentences about the findings going on
+the PR: the main themes or the most important points, so a reader knows what the inline comments
+cover. Don't restate each comment, don't describe what the PR does, and don't sign off. Stay
+grounded in the findings; no praise or opinions the review didn't support. For a `/pr-review`
+file, summarize only the selected findings.
 
 **Suggested verdict**, one of Approve / Comment / Request Changes, with a one-line reason. Judge
 only the findings going on the PR (for a `/pr-review` file, the selected ones):
