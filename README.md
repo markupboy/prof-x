@@ -25,7 +25,7 @@ consistent agent behavior.
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
 | `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
 | `/review-code-assistant` | Pair reviewer     | Local read-only review of a branch/PR diff; suggest pasteable comments, never post     |
-| `/draft-pr-review` | Pair reviewer           | Turn `/review-code-assistant` output into a pending GitHub review with inline comments, a summary, and a suggested verdict; never submits |
+| `/draft-pr-review` | Pair reviewer           | Turn `/review-code-assistant` output or a saved `/pr-review` file into a pending GitHub review with inline comments, a summary, and a suggested verdict; never submits |
 | `/fetch-pr-review` | Review secretary        | Capture every comment on a PR URL into a self-contained `.PR-REVIEW.md`; fetch only, no triage or replies |
 | `/refine-pr-review` | Author's advocate      | Triage a fetched PR-REVIEW file with the user, draft replies, and write REQUIREMENTS for accepted changes |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
@@ -82,7 +82,7 @@ Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea
 - Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
 - First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
 
-`/fetch-ticket`, `/fetch-pr-review`, and `/review-code-assistant` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR. `/draft-pr-review` is GitHub-only (`gh`) and its single write is creating a pending review; it never submits it.
+`/fetch-ticket`, `/fetch-pr-review`, and `/review-code-assistant` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR. `/draft-pr-review` is GitHub-only (`gh`) and its single write is creating a pending review; it never submits it. It drafts either `/review-code-assistant` output or the latest `/pr-review` file in `pr_reviews/`, and never edits that file.
 
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 
