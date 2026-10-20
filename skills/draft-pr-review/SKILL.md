@@ -184,11 +184,25 @@ Short and plain:
 - The suggested verdict and reason. The user picks the verdict and submits in the GitHub UI.
 - In the Approve case, the summary text to post separately.
 
+## 7. Offer to copy the summary
+
+Last thing in the run, after the report: ask one `AskUserQuestion` whether to copy the proposed
+review description (the step 4 summary, exactly as written) to the clipboard, with options
+**Yes** and **No**.
+
+- **Yes**: pipe the summary to the clipboard (`pbcopy` on macOS, else `wl-copy`, `xclip -selection
+  clipboard`, or `clip.exe`, whichever exists) and confirm in one line. If no clipboard tool is
+  available, say so and don't retry.
+- **No**: do nothing and end the run. Don't re-ask.
+
+Copy only the summary, never the inline comments or the verdict. Use stdin, not a temp file.
+
 ## Boundaries
 
 - Never submit, approve, request changes, resolve, reply to, edit, or delete anything on the PR.
   The only write is creating one pending review (plus file-level or add-to-pending threads the
   user approved in step 3).
 - Never put the verdict in the review; only suggest it in the report.
-- No checkout, no working-tree changes, no files written beyond the temp payload.
+- No checkout, no working-tree changes, no files written beyond the temp payload. The clipboard
+  copy in step 7 happens only on a Yes.
 - Never edit the `/pr-review` file, statuses included; `/pr-review` owns it.
