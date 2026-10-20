@@ -25,6 +25,7 @@ prof-x/
 │   ├── dependency-bumps/ # /dependency-bumps (triage Renovate/Dependabot PRs → merge the safe ones in sequence)
 │   ├── handover/         # /handover (package a finished change for review)
 │   ├── self-review/      # /self-review (author-side merge-ready review + report)
+│   ├── squash-description-fix/ # /squash-description-fix (clean a GitHub auto-generated squash message)
 │   ├── ship/             # /ship (release workflow)
 │   ├── browse/           # /browse (Playwright-cli QA / dogfooding browser)
 │   ├── testing-gaps/     # /testing-gaps (find untested behaviors in a diff, ranked, with test cases)

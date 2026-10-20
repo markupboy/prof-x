@@ -32,6 +32,7 @@ consistent agent behavior.
 | `/dependency-bumps` | Dependency steward     | Triage open Renovate / Dependabot PRs against how the repo uses each dependency, then merge the safe ones in sequence on green CI |
 | `/handover`        | Author                  | Package a finished change as a reviewer-facing PR description / handover doc           |
 | `/self-review`     | Author as maintainer    | Review your own changeset until merge-ready and write a compact report proving it      |
+| `/squash-description-fix` | Author           | Clean up a GitHub auto-generated squash-merge message: drop PR-internal commits, collapse co-authors, make it readable |
 | `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
 | `/testing-gaps`    | QA lead                 | Find the behaviors a change leaves untested, ranked by blast radius, each with a concrete test case |
@@ -56,7 +57,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /draft-pr-review, /fetch-pr-review, /refine-pr-review, /pr-feedback, /dependency-bumps, /handover, /self-review, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /draft-pr-review, /fetch-pr-review, /refine-pr-review, /pr-feedback, /dependency-bumps, /handover, /self-review, /squash-description-fix, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
 
 ### What gets installed
 

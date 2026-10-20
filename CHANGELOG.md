@@ -4,6 +4,8 @@
 
 ### Added
 
+- `/squash-description-fix` skill: clean a pasted GitHub auto-generated squash message by
+  dropping PR-internal entries, rewriting the rest readably, and collapsing co-authors to the bottom.
 - `/draft-pr-review` skill: turn `/review-code-assistant` output into a pending (unsubmitted)
   GitHub review with inline comments, a conversational summary, and a suggested verdict.
   Drafts on invocation without a confirmation step and reports a link to the PR's changes view.
