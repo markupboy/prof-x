@@ -91,6 +91,11 @@ Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea
 
 `/dependency-bumps` picks `gh` or `tea` from the current repo's `origin` remote and stops without it. It is read-only until you choose which PRs to merge; then it updates each branch on the forge, waits for required CI, and squash-merges, one PR at a time. It never force-pushes, bypasses checks, or merges a PR it did not judge safe.
 
+`/self-review` and `/memory-doctor` each hand part of their work to a skill that prof-x does not ship, so install both separately:
+
+- **`fresh-eyes-review`.** `/self-review` loads it to run the fresh-context review pass.
+- **`self-improve`.** `/memory-doctor` routes each relocation write through it, and `/refine-pr-review` uses it to persist lessons when it's installed.
+
 `/pr-review` has two extra dependencies:
 
 - **`pr-review-toolkit` (required).** `/pr-review` wraps it — it invokes `/pr-review-toolkit:review-pr` to do the actual analysis, then adds Linear-awareness and file output on top. `./setup` installs it for you (`claude plugin install pr-review-toolkit@claude-plugins-official`); without it, `/pr-review` cannot run.
