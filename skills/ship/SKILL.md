@@ -2,7 +2,7 @@
 name: ship
 version: 1.0.0
 description: |
-  Ship workflow: merge main, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR.
+  Ship workflow: rebase onto origin/main, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR.
 allowed-tools:
   - Bash
   - Read
@@ -15,7 +15,7 @@ allowed-tools:
 
 # Ship: Fully Automated Ship Workflow
 
-You are running the `/ship` workflow. This is a **non-interactive, fully automated** workflow. Do NOT ask for confirmation at any step. The user said `/ship` which means DO IT. Run straight through and output the PR URL at the end.
+You are running the `/ship` workflow. This is a **fully automated** workflow: the user said `/ship`, so run straight through and output the PR URL at the end. The one exception is published text: draft the commit messages and the PR title and body with `use-conversational-language`, show them, and commit or create the PR only after an explicit go-ahead on that wording.
 
 **Only stop for:**
 
@@ -31,7 +31,6 @@ You are running the `/ship` workflow. This is a **non-interactive, fully automat
 - Uncommitted changes (always include them)
 - Version bump choice (auto-pick PATCH — see Step 4)
 - CHANGELOG content (auto-generate from diff)
-- Commit message approval (auto-commit)
 - Multi-file changesets (auto-split into bisectable commits)
 
 ---
@@ -160,7 +159,7 @@ Save the review output — it goes into the PR body in Step 8.
 
 ## Step 5: CHANGELOG (auto-generate)
 
-1. Read `CHANGELOG.md` header to know the format. If there is no version file or it's unreadable, **SKIP THIS STEP**.
+1. Read `CHANGELOG.md` header to know the format. If there is no `CHANGELOG.md`, **SKIP THIS STEP**.
 
 2. Auto-generate the entry from **ALL commits on the branch** (not just recent ones):
    - Use `git log main..HEAD --oneline` to see every commit being shipped
@@ -205,16 +204,7 @@ Save the review output — it goes into the PR body in Step 8.
 5. Compose each commit message:
    - First line: `<type>: <summary>` (type = feat/fix/chore/refactor/docs)
    - Body: brief description of what this commit contains
-   - Only the **final commit** (VERSION + CHANGELOG) gets the version tag and co-author trailer:
-
-```bash
-git commit -m "$(cat <<'EOF'
-chore: bump version and changelog (vX.Y.Z)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
-```
+   - Only the **final commit** (VERSION + CHANGELOG) gets the version tag, e.g. `chore: bump version and changelog (vX.Y.Z)`. Add the attribution trailer the session's instructions call for, if any.
 
 ---
 
@@ -303,7 +293,7 @@ If nothing needs to change, leave the body alone. Otherwise write the edited bod
 - **Never skip tests.** If tests fail, stop.
 - **Never skip the pre-landing review.** If checklist.md is unreadable, stop.
 - **Never force push.** Use regular `git push` only.
-- **Never ask for confirmation** except for MINOR/MAJOR version bumps, Bugbot findings (one AskUserQuestion: abort / fix / ignore), and CRITICAL review findings (one AskUserQuestion per critical issue with fix recommendation).
+- **Never ask for confirmation** except for the commit and PR wording go-ahead, MINOR/MAJOR version bumps, Bugbot findings (one AskUserQuestion: abort / fix / ignore), and CRITICAL review findings (one AskUserQuestion per critical issue with fix recommendation).
 - **Always use the 3-digit semver format** (`MAJOR.MINOR.PATCH`) from the VERSION file.
 - **Date format in CHANGELOG:** `YYYY-MM-DD`
 - **Split commits for bisectability** — each commit = one logical change.

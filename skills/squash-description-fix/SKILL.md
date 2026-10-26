@@ -10,6 +10,8 @@ description: |
   squash commit", "tidy the merge commit message", or "/squash-description-fix".
 allowed-tools:
   - Read
+  - Bash
+  - AskUserQuestion
 ---
 
 # Squash description fix
@@ -20,7 +22,7 @@ The squash message is a commit message published under the user's name. Invoke t
 
 ## Guardrails
 
-- Pure text transform. Never run Git or `gh` commands, never post or edit anything on GitHub. The user pastes the result into the merge box themselves.
+- Pure text transform. Never run Git or `gh` commands, never post or edit anything on GitHub. The user pastes the result into the merge box themselves. The only side effect allowed is the clipboard copy in the last step, and only on a Yes.
 - Faithful to the source. Rewording is for readability only; never invent facts, reasons, or scope that the original entries don't state.
 
 ## Input
@@ -75,6 +77,13 @@ Co-authored-by: Name <email>
 ```
 
 Omit the `---------` section when there are no co-authors. After the block, add at most a short note: entries kept on a judgment call, or that nothing needed dropping. No other commentary.
+
+## Step 5: Offer to copy
+
+Last thing in the run, after the output block and any note: ask one `AskUserQuestion` whether to copy the cleaned message to the clipboard, with options **Yes** and **No**.
+
+- **Yes**: pipe exactly the content of the output block (no fences, no note) to the clipboard (`pbcopy` on macOS, else `wl-copy`, `xclip -selection clipboard`, or `clip.exe`, whichever exists) and confirm in one line. If no clipboard tool is available, say so and don't retry.
+- **No**: do nothing and end the run. Don't re-ask.
 
 ## Worked example
 

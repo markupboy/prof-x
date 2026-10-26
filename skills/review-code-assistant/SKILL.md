@@ -55,6 +55,27 @@ say so and ask how to proceed rather than review stale or wrong refs.
 A PR link always overrides auto-detection (its target comes from the PR metadata; PRs are not always
 against the main branch). Always state which target was chosen so the user can correct it.
 
+**Stacked PRs (GitHub).** A stacked PR's target is the branch below it in the stack, not the trunk;
+diffing against the default branch would pull every lower layer into the review. On a `github.com`
+remote, check for a stack before settling on the target:
+
+- With a PR link, the PR's base ref already is the parent branch: use it. Otherwise find the stack
+  for the source branch: `gh stack view --json` when `gh stack` is installed and the stack is
+  tracked locally (see `gh stack --help`), else plain `gh`: the parent is the PR whose head equals
+  this branch's PR base, the children are the open PRs whose base equals this branch (`gh pr list
+  --head/--base ... --json number,title,url`).
+- With no link and no explicit target, a branch found in a stack takes its parent branch as the
+  target, ahead of the `origin/HEAD` auto-detection above. Name the stack position and chosen target
+  in the output (e.g. "layer 2 of 4, against `parent-branch`").
+- Fetch the parent branch too, and diff against its freshest ref per the freshness rules.
+- Review only this layer: no comments on lower layers' changes. Before raising a "missing" or
+  intent-mismatch finding, read the child PRs' titles and descriptions; work a later layer clearly
+  covers is not a finding. A parent that has since merged into the trunk is not a stack anymore:
+  retarget to wherever the PR's base now points.
+
+Only read-only stack commands: never run `gh stack checkout`, `sync`, `submit`, `modify`,
+`unstack`, or `add`.
+
 ## Enrich from the PR link
 
 When a URL is given, identify the platform from its host and fetch with the matching CLI — do not
@@ -190,7 +211,8 @@ Local text only; write no file unless the user later asks to save it.
 ## Boundaries
 
 - **Read-only, one exception.** Only read-only git (`diff`, `log`, `show`, `merge-base`,
-  `branch --list`, `symbolic-ref`) and read-only platform fetches, plus `git fetch` (the sole
+  `branch --list`, `symbolic-ref`) and read-only platform fetches (including `gh stack view` and
+  `gh pr list/view`), plus `git fetch` (the sole
   allowed ref update — never `git pull`). Never check out other branches, modify the working tree,
   post/reply/resolve/vote on the PR, or write files (unless the user explicitly asks to save the
   output).

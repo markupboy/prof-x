@@ -55,6 +55,20 @@ If the host is `github.com`, use the **GitHub path**. Otherwise (a self-hosted G
 - If a PR exists (from either host): this is a **PR review**. Record the PR number, title, and the short commit hash of HEAD (`git rev-parse --short HEAD`).
 - If no PR exists after the attempts: this is a **WIP review**. Record the short commit hash of HEAD (`git rev-parse --short HEAD`).
 
+## 1a. Detect a GitHub stack (GitHub path only)
+
+GitHub stacked PRs chain branches so each PR's base is the branch below it, not the trunk. A review that diffs against the default branch would sweep in every lower layer, so find out whether this change is part of a stack before reviewing. Skip this step on Gitea.
+
+- **PR review:** read the PR's base and head: `gh pr view <N> --json baseRefName,headRefName,url`. Then confirm stack membership:
+  - If `gh stack` is available and the stack is tracked locally, `gh stack view --json` gives the whole stack (do not guess flags: `gh stack --help`). Never run `gh stack checkout`, `sync`, `submit`, `modify`, `unstack`, or `add` — they change the working tree, branches, or GitHub.
+  - Otherwise walk the chain with plain `gh`: the **parent** is the open PR whose head equals this PR's base (`gh pr list --head "<baseRefName>" --state all --json number,title,url`); the **children** are the open PRs whose base equals this PR's head (`gh pr list --base "<headRefName>" --json number,title,url`). Repeat to map the full chain.
+  - Not stacked: the base is the repo's default branch and no parent/child PR exists. Skip the rest of this step.
+- **WIP review:** if `gh stack view --json` shows the current branch in a stack, the branch directly below is the base. Otherwise there is no stack.
+
+Record `STACK_BASE` (the branch this PR is diffed against: the PR's base ref, or the parent branch for WIP), the PR's position (e.g. `2 of 4`), and the parent and child PRs with their numbers, titles, and URLs. When the base is not the default branch but no parent PR is found (parent merged, or base is a long-lived release branch), record `STACK_BASE` only and note that it is not a stack.
+
+Run `git fetch origin` (plain fetch only) so `origin/<STACK_BASE>` is current.
+
 ## 1b. Resolve the active worktree root
 
 Store reviews in the **current** git worktree so each linked worktree keeps its own `pr_reviews/` history separate from the main checkout. Resolve the active worktree root:
@@ -127,6 +141,8 @@ Exhaustive reviews trend toward pedantry more than usefulness. We are a working 
 
 **`silent-failure-hunter` needs an explicit override.** Its own instructions claim "zero tolerance" for silent failures and tell it to "call out every instance... no matter how minor" — language strong enough to override generic pragmatism framing on its own. When invoking it, explicitly instruct it to only surface **Critical** for silent failures with a plausible production trigger, and to downgrade broad-catch or missing-context nitpicks that don't hide a real class of error to **Suggestion** (or omit them).
 
+**Stack-aware scope:** when `STACK_BASE` is set, the PR under review is only the diff `origin/<STACK_BASE>...HEAD`. Tell the toolkit and forward to every sub-agent that this is the diff to review (not `main`/default branch), and that lower layers' changes are out of scope — no findings on lines the PR did not change relative to its base. Also forward the parent and child PR titles so agents don't flag work that belongs to a sibling layer. A thing that looks missing may land in a child PR: before raising it, check the child PRs' titles and descriptions (`gh pr view <N> --json title,body`), and when a child clearly covers it, drop the finding or mention the dependency instead of raising it.
+
 **Worktree note:** The current working directory is the project root for the branch being reviewed. Agents spawned by the toolkit should explore code here — do NOT navigate to other worktrees or parent directories to find source files. `WORKTREE_ROOT` is only used for reading/writing review files in steps 2 and 10.
 
 **Linear-aware analysis:** if `LINEAR_CONTEXT` was captured in step 1d, treat the Linear ticket — not the PR description — as the source of truth for _what was supposed to be done_. After the toolkit finishes:
@@ -134,6 +150,7 @@ Exhaustive reviews trend toward pedantry more than usefulness. We are a working 
 - Compare the ticket's acceptance criteria (or, if none are explicit, the ticket description's intent) against the actual diff.
 - For each acceptance criterion or stated requirement, classify it as **met**, **partially met**, **not met**, or **out of scope for this PR** (e.g., explicitly deferred). Cite the file/line evidence for "met" verdicts when practical.
 - Treat any **not met** or **partially met** criterion as a finding in the regular sections (typically `Important` for missing required behavior, `Suggestion` for nice-to-have polish that the ticket called out). Use the issue body to quote the ticket's wording so the gap is traceable.
+- In a stack, a ticket may be split across layers. Criteria a child PR delivers are **out of scope for this PR** (cite the child PR), not **not met**; criteria a parent PR already delivered are **met** by the stack — say so.
 - Flag **scope creep**: substantial changes in the diff that have no basis in the ticket (refactors, unrelated cleanups, feature additions). Surface these as `Suggestion` findings unless they introduce real risk, in which case escalate.
 - If `LINEAR_KEY` was found but `LINEAR_CONTEXT` could not be fetched (`linear` missing or the fetch failed), do not fabricate ticket contents. Note the limitation in step 7's Description block and skip the criterion-level analysis.
 
@@ -233,6 +250,7 @@ If this is a re-review, compare the current findings against the previous review
 # PR#123 - PR title here
 
 **Branch:** `branch-name`
+**Stack:** 2 of 4 — base `parent-branch`; parent [#120](url), child [#124](url)
 **Commit:** `abc1234`
 **Linear:** [SCR-123](https://linear.app/workspace/issue/SCR-123) - Ticket title (State)
 **Reviewed:** YYYY-MM-DD
@@ -258,6 +276,11 @@ Brief summary of what the changes actually do.
 
 Note: each metadata line above ends with two trailing spaces — this is required markdown syntax to force a line break so each field renders on its own line. Without the trailing spaces, the fields collapse onto a single line in the rendered output.
 
+Stack field rules:
+
+- Include the `**Stack:**` line only when step 1a found a stack (or a non-default `STACK_BASE`). Omit it otherwise. Drop the `N of M` position and the parent/child links you could not determine; for a non-stack non-default base, render just ``**Base:** `branch-name` ``.
+- "Files changed" counts the diff against `STACK_BASE`, not the default branch.
+
 Linear field rules:
 
 - Include the `**Linear:**` header line only when `LINEAR_KEY` was found in step 1c. Omit the line entirely when no key was found.
@@ -270,6 +293,7 @@ If this is a versioned re-review (v2+), add the review version line:
 # PR#123 - PR title here
 
 **Branch:** `branch-name`
+**Stack:** 2 of 4 — base `parent-branch`; parent [#120](url), child [#124](url)
 **Commit:** `abc1234`
 **Linear:** [SCR-123](https://linear.app/workspace/issue/SCR-123) - Ticket title (State)
 **Reviewed:** YYYY-MM-DD
