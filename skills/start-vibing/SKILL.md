@@ -231,7 +231,7 @@ drawn from Phase 1 answer 4. End on momentum, not a checklist.
 
 ## Rules
 
-1. **NEVER scaffold after the first message.** Phase 1 first, every time.
+1. **Start with Phase 1 on the first message.** Scaffolding before the shape is confirmed builds the wrong thing.
 2. **Run every verification.** "This should build" is not a gate. Read the output.
 3. **No dependency outside the Phase 2 confirmed list** without asking. If the slice
    needs a date library, ask — do not quietly add one.

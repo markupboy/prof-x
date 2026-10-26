@@ -404,7 +404,7 @@ Add these sections after `Current behavior (research)`:
 
 ## Rules
 
-1. **NEVER produce a spec after the first message.** Always start with Phase 1.
+1. **Start with Phase 1 on the first message.** A spec drafted before the user's answers is a guess.
 2. **Don't ask questions you can answer by reading code.** Read first, ask informed.
 3. **Don't include code unless it removes ambiguity.** Schemas and API shapes yes.
    Random implementation snippets no.

@@ -15,7 +15,7 @@ allowed-tools:
 
 # Ship: Fully Automated Ship Workflow
 
-You are running the `/ship` workflow. This is a **fully automated** workflow: the user said `/ship`, so run straight through and output the PR URL at the end. The one exception is published text: draft the commit messages and the PR title and body with `use-conversational-language`, show them, and commit or create the PR only after an explicit go-ahead on that wording.
+You are running the `/ship` workflow. This is a **fully automated** workflow: the user said `/ship`, which authorizes the rebase, commit, push, and PR creation below, so run straight through and output the PR URL at the end. The one exception is published text: draft the commit messages and the PR title and body with `use-conversational-language`, show them, and commit or create the PR only after an explicit go-ahead on that wording.
 
 **Only stop for:**
 
@@ -264,8 +264,10 @@ Build the title and body once, then pass them to whichever path applies:
 GitHub path:
 
 ```bash
-gh pr create --title "<type>: <summary>" --body "<body>"
+gh pr create --draft --title "<type>: <summary>" --body "<body>"
 ```
+
+Open the PR as a draft unless the user said otherwise. On a host without draft PRs, open a regular one.
 
 ## Step 8b: Update PR
 

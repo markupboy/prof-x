@@ -212,7 +212,7 @@ For every new method, service, or codepath that can fail, fill in this table. (T
 
 Rules for this section:
 
-- `rescue StandardError` is ALWAYS a smell. Name the specific exceptions.
+- `rescue StandardError` is almost always a smell. Name the specific exceptions.
 - `rescue => e` with only `Rails.logger.error(e.message)` is insufficient. Log the full context: what was being attempted, with what arguments, for what user/request.
 - Every rescued error must either: retry with backoff, degrade gracefully with a user-visible message, or re-raise with added context. "Swallow and continue" is almost never acceptable.
 - For each GAP (unrescued error that should be rescued): specify the rescue action and what the user should see.

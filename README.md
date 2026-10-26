@@ -33,7 +33,7 @@ consistent agent behavior.
 | `/handover`        | Author                  | Package a finished change as a reviewer-facing PR description / handover doc           |
 | `/self-review`     | Author as maintainer    | Review your own changeset until merge-ready and write a compact report proving it      |
 | `/squash-description-fix` | Author           | Clean up a GitHub auto-generated squash-merge message: drop PR-internal commits, collapse co-authors, make it readable |
-| `/ship`            | Release engineer        | Sync main, run test, push, open PR. For a ready branch, not for deciding what to build |
+| `/ship`            | Release engineer        | Sync main, run test, push, open a draft PR. For a ready branch, not for deciding what to build |
 | `/browse`          | QA / dogfooding         | Drive headless Chromium via `playwright-cli` — navigate, interact, assert, diff, screenshot |
 | `/testing-gaps`    | QA lead                 | Find the behaviors a change leaves untested, ranked by blast radius, each with a concrete test case |
 | `/create-manual-test-instructions` | QA | Turn a ticket or REQUIREMENTS into a concise `.MANUAL-TEST.md` a non-author can follow |

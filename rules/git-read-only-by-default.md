@@ -23,6 +23,9 @@ They escape by default: a git command whose target directory is not a repo walks
 session's repo. So fence such a script with `GIT_CEILING_DIRECTORIES`, verify the target is that
 repo's root, and abort on the first failed setup step.
 
+A slash-invoked workflow authorizes the git writes it names: `/ship` covers its own fetch, rebase,
+commit, push, and PR creation. Anything it doesn't name still needs its own instruction.
+
 Never run history-rewriting or discarding commands without an instruction naming that command (e.g.
 `reset --hard`, `clean -fd`, `push --force*`).
 
