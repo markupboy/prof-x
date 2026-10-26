@@ -108,10 +108,9 @@ Do NOT proceed until scope is locked.
 
 ### Phase 3: Technical Interrogation (HARD requirement: read code first)
 
-**Mandatory:** Before asking ANY Phase 3 question, you MUST read at least one
-piece of evidence from the codebase via Grep, Glob, or Read. This is the magical
-moment for the user: they see you grounded in their actual code, not generic
-checklists. Do NOT skip. Do NOT ask "what file should I look at?" first — find
+Before asking any Phase 3 question, read at least one piece of evidence from the
+codebase (Grep, Glob, or Read) so the questions are grounded in the user's actual
+code, not generic checklists. Don't ask "what file should I look at?" first — find
 it yourself.
 
 Mapping the user's request to evidence:

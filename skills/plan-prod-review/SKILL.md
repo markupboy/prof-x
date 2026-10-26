@@ -403,9 +403,9 @@ Evaluate:
 - Platform potential. Does this create capabilities other features can leverage?
   **STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY. If no issues or fix is obvious, state what you'll do and move on — don't waste a question. Do NOT proceed until user responds.
 
-## CRITICAL RULE — How to ask questions
+## How to ask questions
 
-Every AskUserQuestion MUST: (1) present 2-3 concrete lettered options, (2) state which option you recommend FIRST, (3) explain in 1-2 sentences WHY that option over the others, mapping to engineering preferences. No batching multiple issues into one question. No yes/no questions. Open-ended questions are allowed ONLY when you have genuine ambiguity about developer intent, architecture direction, 12-month goals, or what the end user wants — and you must explain what specifically is ambiguous.
+Each AskUserQuestion covers one issue and offers 2-3 concrete lettered options, with your recommendation first and 1-2 sentences on why it beats the others, tied to the engineering preferences. Avoid yes/no questions. Ask open-ended ones only when developer intent, architecture direction, 12-month goals or the end user's needs are genuinely ambiguous, and say what specifically is ambiguous.
 
 ## For Each Issue You Find
 
