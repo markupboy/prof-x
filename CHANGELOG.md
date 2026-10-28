@@ -4,6 +4,9 @@
 
 ### Added
 
+- `/diagnose` skill: take a Linear support ticket to a verdict by validating it against the
+  code and replicating with the user when needed; a confirmed defect flows through requirements,
+  an approved plan, and execute-plan.
 - `/squash-description-fix` skill: clean a pasted GitHub auto-generated squash message by
   dropping PR-internal entries, rewriting the rest readably, and collapsing co-authors to the bottom.
 - `/draft-pr-review` skill: turn `/review-code-assistant` output into a pending (unsubmitted)
