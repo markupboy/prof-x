@@ -2,7 +2,7 @@
 name: draft-pr-review
 version: 1.0.0
 description: |
-  Take the output of /review-code-assistant, or a saved /pr-review file
+  Take the output of a light /pr-review run, or a saved full /pr-review file
   (pr_reviews/review_<PR>[_vN].md), and create a pending (draft) GitHub review on
   the PR: every comment attached to its line, a short summary of the findings as the review body,
   and a suggested verdict (Approve, Comment, Request Changes). Never submits the
@@ -19,7 +19,7 @@ allowed-tools:
 
 # Draft PR review
 
-The opt-in publish step after `/review-code-assistant` (light, local text) or `/pr-review` (thorough,
+The opt-in publish step after `/pr-review` in light mode (local text) or in full mode (thorough,
 saved to a file). Both are read-only; this one turns their findings into a **pending** GitHub review
 the user can edit and submit in the web UI. The only write is creating that one pending review.
 Never submit it.
@@ -31,8 +31,8 @@ this skill is GitHub-only. If `gh` is not on PATH or not authenticated, stop and
 
 One run drafts exactly one review source, never a merge of two:
 
-- **`/review-code-assistant` output**: already in the conversation, or a pasted block.
-- **`/pr-review` file**: a file path the user gives, or one found by lookup.
+- **`/pr-review` light output**: already in the conversation, or a pasted block.
+- **`/pr-review` file** (full or pedantic): a file path the user gives, or one found by lookup.
 
 **Explicit wins.** If the user named a file or pasted a block, or said which review to draft ("the
 pr-review", "the assistant's comments"), use that.
@@ -42,12 +42,12 @@ look in `$(git rev-parse --show-toplevel)/pr_reviews/` for `review_${PR_NUMBER}.
 `review_${PR_NUMBER}_v*.md`. Take the highest version (the unversioned file counts as v1).
 
 **Both available** (conversation output plus a matching file): ask once with `AskUserQuestion`
-which one to draft. **Neither:** tell the user to run `/review-code-assistant` or `/pr-review` first.
+which one to draft. **Neither:** tell the user to run `/pr-review` first.
 
 Also needed: the PR URL and the ref or SHA the review was run against. Extract `OWNER`, `REPO`,
 `PR_NUMBER`.
 
-- From `/review-code-assistant`: the PR URL from the review run, else ask; the SHA is usually
+- From light output: the PR URL from the review run, else ask; the SHA is usually
   stated in the review.
 - From a `/pr-review` file: `PR_NUMBER` from the `# PR#N - title` header, `OWNER/REPO` from
   `origin` (ask if it can't be resolved), and the reviewed SHA from `**Commit:**` (a short hash;
@@ -56,7 +56,7 @@ Also needed: the PR URL and the ref or SHA the review was run against. Extract `
 
 ## 2. Parse the findings
 
-### 2a. `/review-code-assistant` output
+### 2a. `/pr-review` light output
 
 Each finding is a `### N · path:line` heading (a range `path:10-14` is possible), an explanation,
 and an optional **Suggested comment** in a fenced block.
@@ -175,7 +175,7 @@ Short and plain:
   pending review can be edited and submitted:
   `https://github.com/$OWNER/$REPO/pull/$PR_NUMBER/changes`
   (e.g. `https://github.com/screensteps/ai-proxy-api/pull/173/changes`).
-- The source drafted: `/review-code-assistant` output, or the `/pr-review` file path (e.g.
+- The source drafted: `/pr-review` light output, or the `/pr-review` file path (e.g.
   `pr_reviews/review_123_v2.md`).
 - The posted comments (each `path:line` with its body) and the summary, so the user can see what
   was drafted without opening GitHub.

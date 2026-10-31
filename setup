@@ -54,7 +54,7 @@ print_link_summary() {
   echo
 }
 
-# /pr-review wraps the pr-review-toolkit plugin. Install it if it's missing.
+# /pr-review's full and pedantic modes wrap the pr-review-toolkit plugin. Install it if it's missing.
 # Non-fatal: a failure here must not abort the skill symlinking above.
 install_pr_review_toolkit() {
   local plugin="pr-review-toolkit@claude-plugins-official"

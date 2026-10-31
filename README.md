@@ -24,9 +24,8 @@ consistent agent behavior.
 | `/plan-prod-review` | CPO / staff PM          | Evaluate the problem, align on the outcome, prep for breakdown and handoff             |
 | `/plan-eng-review` | Eng manager / Tech lead | Lock in architecture, data flow, diagrams, edge cases, and tests                       |
 | `/review`          | Paranoid staff engineer | Find the bugs that pass CI but blow up in production. Not a style nitpick pass         |
-| `/pr-review`       | Paranoid staff engineer | Critical review of a PR authored by someone other than self                            |
-| `/review-code-assistant` | Pair reviewer     | Local read-only review of a branch/PR diff; suggest pasteable comments, never post     |
-| `/draft-pr-review` | Pair reviewer           | Turn `/review-code-assistant` output or a saved `/pr-review` file into a pending GitHub review with inline comments, a summary, and a suggested verdict; never submits |
+| `/pr-review`       | Paranoid staff engineer | Review a PR or branch, never posting. Under 400 changed lines: a light local pass with pasteable comments. 400+: a full, ticket-aware review saved to `pr_reviews/`. Force a depth with `light`, `full`, or `pedantic` |
+| `/draft-pr-review` | Pair reviewer           | Turn light `/pr-review` output or a saved full `/pr-review` file into a pending GitHub review with inline comments, a summary, and a suggested verdict; never submits |
 | `/fetch-pr-review` | Review secretary        | Capture every comment on a PR URL into a self-contained `.PR-REVIEW.md`; fetch only, no triage or replies |
 | `/refine-pr-review` | Author's advocate      | Triage a fetched PR-REVIEW file with the user, draft replies, and write REQUIREMENTS for accepted changes |
 | `/pr-feedback`     | Author's advocate       | Validate a GitHub PR review thread against the code, then PROCEED, CLARIFY, or PUSH BACK — replies to the thread only with explicit permission |
@@ -58,7 +57,7 @@ Me and only me, really. I have no intention of this being used in its entirety e
 
 ## Installation
 
-> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /diagnose, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /review-code-assistant, /draft-pr-review, /fetch-pr-review, /refine-pr-review, /pr-feedback, /dependency-bumps, /handover, /self-review, /squash-description-fix, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
+> Install prof-x: run `git clone https://github.com/markupboy/prof-x.git ~/.claude/skills/prof-x && cd ~/.claude/skills/prof-x && ./setup` (this also installs the `pr-review-toolkit` plugin that `/pr-review` depends on — see [Requirements](#requirements)) then add a "prof-x" section to CLAUDE.md that lists the available skills: /spec, /fetch-ticket, /review-ticket, /refine-ticket, /create-implementation-plan, /execute-plan, /implement, /diagnose, /start-vibing, /plan-prod-review, /plan-eng-review, /review, /pr-review, /draft-pr-review, /fetch-pr-review, /refine-pr-review, /pr-feedback, /dependency-bumps, /handover, /self-review, /squash-description-fix, /ship, /browse, /testing-gaps, /create-manual-test-instructions, /memory-doctor, /context-checkup, /use-conversational-language.
 
 ### What gets installed
 
@@ -84,7 +83,7 @@ Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea
 - Install with `brew install playwright-cli` (macOS) or `npm install -g @playwright/cli@latest`. The skill also falls back to a local `npx --no-install playwright-cli` if a project pins it.
 - First run may prompt to download a Chromium build (`playwright-cli install-browser`). Nothing is bundled with prof-x.
 
-`/fetch-ticket`, `/fetch-pr-review`, and `/review-code-assistant` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (`/review-code-assistant`). `/refine-pr-review` is file-in/file-out: it never posts to the PR. `/draft-pr-review` is GitHub-only (`gh`) and its single write is creating a pending review; it never submits it. It drafts either `/review-code-assistant` output or the latest `/pr-review` file in `pr_reviews/`, and never edits that file.
+`/fetch-ticket`, `/fetch-pr-review`, and `/pr-review` pick a CLI from the URL or ticket id: `github.com` → `gh`; `linear.app` / a Linear key → `linear`; any other git/issue host → `tea`. Do not use GitHub, Gitea, or Linear MCP. Without the matching CLI they stop (`/fetch-ticket`, `/fetch-pr-review`) or fall back to a local three-dot git diff (light `/pr-review`). `/refine-pr-review` is file-in/file-out: it never posts to the PR. `/draft-pr-review` is GitHub-only (`gh`) and its single write is creating a pending review; it never submits it. It drafts either light `/pr-review` output or the latest `/pr-review` file in `pr_reviews/`, and never edits that file.
 
 `/pr-feedback` is GitHub-only and read-only against GitHub by default:
 
@@ -99,5 +98,5 @@ Most skills only need `git` plus the host CLIs (`gh` for GitHub, `tea` for Gitea
 
 `/pr-review` has two extra dependencies:
 
-- **`pr-review-toolkit` (required).** `/pr-review` wraps it — it invokes `/pr-review-toolkit:review-pr` to do the actual analysis, then adds Linear-awareness and file output on top. `./setup` installs it for you (`claude plugin install pr-review-toolkit@claude-plugins-official`); without it, `/pr-review` cannot run.
-- **`linear` CLI (optional).** When present, `/pr-review` fetches the linked Linear ticket and scores the PR against its acceptance criteria. When absent, it degrades gracefully — it notes the ticket reference but skips the criterion-level analysis. No Linear key in the branch/PR means this is skipped entirely.
+- **`pr-review-toolkit` (required for full and pedantic).** Those modes wrap it — `/pr-review` invokes `/pr-review-toolkit:review-pr` to do the actual analysis, then adds Linear-awareness and file output on top. `./setup` installs it for you (`claude plugin install pr-review-toolkit@claude-plugins-official`); without it, full and pedantic cannot run (light does not need it).
+- **`linear` CLI (optional, full and pedantic only).** When present, `/pr-review` fetches the linked Linear ticket and scores the PR against its acceptance criteria. When absent, it degrades gracefully — it notes the ticket reference but skips the criterion-level analysis. No Linear key in the branch/PR means this is skipped entirely.

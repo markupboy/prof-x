@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `/pr-review` now covers both review depths: under 400 changed lines it runs a light
+  pass (local text, suggested pasteable comments, no file); 400 or more runs the full
+  toolkit-backed review saved to `pr_reviews/`. `/pr-review light`, `full`, or `pedantic`
+  forces a depth; `pedantic` is full without the severity calibration and realism triage.
+  Saved reviews gain a `**Mode:**` header line.
+
 ### Added
 
 - `/diagnose` skill: take a Linear support ticket to a verdict by validating it against the
@@ -9,7 +17,7 @@
   an approved plan, and execute-plan.
 - `/squash-description-fix` skill: clean a pasted GitHub auto-generated squash message by
   dropping PR-internal entries, rewriting the rest readably, and collapsing co-authors to the bottom.
-- `/draft-pr-review` skill: turn `/review-code-assistant` output into a pending (unsubmitted)
+- `/draft-pr-review` skill: turn light `/pr-review` output or a saved review file into a pending (unsubmitted)
   GitHub review with inline comments, a conversational summary, and a suggested verdict.
   Drafts on invocation without a confirmation step and reports a link to the PR's changes view.
 - `/dependency-bumps` skill: triage open Renovate / Dependabot PRs with one analyst per
@@ -42,8 +50,6 @@
   `.PR-REVIEW.md` in the task's planning directory. Fetch only — no triage or replies.
 - `/refine-pr-review` skill: triage a fetched PR-REVIEW file with the user, draft
   replies, and write REQUIREMENTS for accepted changes.
-- `/review-code-assistant` skill: local read-only review of a branch/PR diff;
-  suggest pasteable comments, never post.
 - `/use-conversational-language` skill: concise, natural voice for human-facing text
   (conversations, comments, commit messages) without changing content.
 - `no-nonsense-comments` always-on rule: durable comments that make sense without session
